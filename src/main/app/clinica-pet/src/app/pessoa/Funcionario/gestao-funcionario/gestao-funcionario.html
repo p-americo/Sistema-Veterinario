@@ -1,0 +1,134 @@
+<div class="container">
+  <h1 class="title">Gestão de Funcionários</h1>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+    <button class="close-btn" (click)="errorMessage = ''">×</button>
+  </div>
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+    <button class="close-btn" (click)="successMessage = ''">×</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Consultar Funcionários</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="searchForm" (ngSubmit)="searchFuncionarios()">
+        <div class="form-group">
+          <label for="searchType">Buscar por:</label>
+          <select id="searchType" formControlName="searchType" class="form-control">
+            <option value="nome">Nome</option>
+            <option value="id">ID</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="searchTerm">Termo de busca:</label>
+          <input type="text" id="searchTerm" formControlName="searchTerm" class="form-control" placeholder="Digite o termo de busca">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Buscar</button>
+          <button type="button" class="btn btn-secondary" (click)="loadFuncionarios()">Listar Todos</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>{{ isEditing ? 'Editar Funcionário' : 'Cadastrar Novo Funcionário' }}</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="nome">Nome:</label>
+          <input type="text" id="nome" formControlName="nome" class="form-control" placeholder="Nome completo">
+        </div>
+        <div class="form-group">
+          <label for="cpf">CPF:</label>
+          <input type="text" id="cpf" formControlName="cpf" class="form-control" placeholder="Apenas números (11 dígitos)">
+        </div>
+        <div class="form-group">
+          <label for="dataNascimento">Data de Nascimento:</label>
+          <input type="date" id="dataNascimento" formControlName="dataNascimento" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="telefone">Telefone:</label>
+          <input type="text" id="telefone" formControlName="telefone" class="form-control" placeholder="Telefone com DDD">
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" formControlName="email" class="form-control" placeholder="exemplo@email.com">
+        </div>
+
+        <div class="form-group">
+          <label for="dataAdmissao">Data de Admissão:</label>
+          <input type="date" id="dataAdmissao" formControlName="dataAdmissao" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="cargoId">Cargo:</label>
+          <select id="cargoId" formControlName="cargoId" class="form-control">
+            <option [ngValue]="null" disabled>Selecione um cargo</option>
+            <option *ngFor="let cargo of listaCargos" [value]="cargo.id">
+              {{ cargo.cargo }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="crmv">CRMV (Opcional):</label>
+          <input type="text" id="crmv" formControlName="crmv" class="form-control" placeholder="Apenas para veterinários">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="funcionarioForm.invalid">
+            {{ isEditing ? 'Atualizar' : 'Cadastrar' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Lista de Funcionários</h2>
+    </div>
+    <div class="card-body">
+      <div *ngIf="funcionarios.length === 0" class="no-data">
+        Nenhum funcionário encontrado.
+      </div>
+      <table *ngIf="funcionarios.length > 0" class="table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Cargo</th>
+          <th>Telefone</th>
+          <th>Email</th>
+          <th>Data Admissão</th>
+          <th>CRMV</th>
+          <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let func of funcionarios">
+          <td>{{ func.id }}</td>
+          <td>{{ func.nome }}</td>
+          <td>{{ func.cargo.cargo }}</td>
+          <td>{{ func.telefone }}</td>
+          <td>{{ func.email }}</td>
+          <td>{{ func.dataAdmissao | date:'dd/MM/yyyy' }}</td>
+          <td>{{ func.crmv || 'N/A' }}</td>
+          <td class="actions">
+            <button class="btn btn-sm btn-info" (click)="editFuncionario(func)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteFuncionario(func.id)">Excluir</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

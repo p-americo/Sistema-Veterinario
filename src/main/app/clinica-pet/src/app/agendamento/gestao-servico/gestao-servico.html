@@ -1,0 +1,70 @@
+<div class="container">
+  <h1 class="title">Gestão de Serviços</h1>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}<button class="close-btn" (click)="errorMessage = ''">×</button></div>
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}<button class="close-btn" (click)="successMessage = ''">×</button></div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>{{ isEditing ? 'Editar Serviço' : 'Cadastrar Novo Serviço' }}</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="servicoForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="tipo">Tipo de Serviço:</label>
+          <select id="tipo" formControlName="tipo" class="form-control">
+            <option [ngValue]="null" disabled>Selecione um tipo</option>
+            <option *ngFor="let tipo of listaTipos" [value]="tipo">{{ tipo }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="veterinarioId">Veterinário Responsável:</label>
+          <select id="veterinarioId" formControlName="veterinarioId" class="form-control">
+            <option [ngValue]="null" disabled>Selecione um veterinário</option>
+            <option *ngFor="let vet of listaVeterinarios" [value]="vet.id">{{ vet.nome }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="valor">Valor (R$):</label>
+          <input type="number" id="valor" formControlName="valor" class="form-control" placeholder="Ex: 150.00">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="servicoForm.invalid">{{ isEditing ? 'Atualizar' : 'Cadastrar' }}</button>
+          <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2>Lista de Serviços Cadastrados</h2></div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tipo</th>
+          <th>Veterinário</th>
+          <th>Valor</th>
+          <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let servico of servicos">
+          <td>{{ servico.id }}</td>
+          <td>{{ servico.tipo }}</td>
+          <td>{{ servico.nomeVeterinario }}</td>
+          <td>{{ servico.valor | currency:'BRL' }}</td>
+          <td class="actions">
+            <button class="btn btn-sm btn-info" (click)="editServico(servico)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteServico(servico.id)">Excluir</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

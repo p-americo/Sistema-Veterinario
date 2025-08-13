@@ -1,0 +1,117 @@
+<div class="container">
+  <h1 class="title">Gestão de Prontuários</h1>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}<button class="close-btn" (click)="errorMessage = ''">×</button></div>
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}<button class="close-btn" (click)="successMessage = ''">×</button></div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Consultar Prontuário do Animal</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="animalBusca">Selecione um animal para ver ou criar seu prontuário:</label>
+        <select id="animalBusca" [formControl]="animalSelectControl" class="form-control">
+          <option [ngValue]="null">Selecione...</option>
+          <option *ngFor="let animal of listaAnimais" [value]="animal.id">
+            {{ animal.nome }} (Dono: {{ animal.cliente.nome }})
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="prontuarioAtual" class="card">
+    <div class="card-header">
+      <h2>Prontuário de: {{ prontuarioAtual.nomeAnimal }}</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="prontuarioForm" (ngSubmit)="onProntuarioSubmit()">
+        <div *ngIf="prontuarioAtual.id === 0" class="alert alert-info" style="border-color: #3498db; background-color: #eaf5fb;">
+          Este animal ainda não possui um prontuário. Preencha os campos abaixo e clique em "Salvar" para criá-lo antes de adicionar registros.
+        </div>
+        <div class="form-group">
+          <label for="alergiasConhecidas">Alergias Conhecidas:</label>
+          <textarea id="alergiasConhecidas" formControlName="alergiasConhecidas" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="condicoesPreexistentes">Condições Pré-existentes:</label>
+          <textarea id="condicoesPreexistentes" formControlName="condicoesPreexistentes" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">{{ prontuarioAtual.id === 0 ? 'Criar Prontuário' : 'Salvar Alterações' }}</button>
+        </div>
+      </form>
+
+      <div *ngIf="prontuarioAtual.id > 0">
+        <hr style="margin: 30px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3>Histórico de Registros</h3>
+          <button class="btn btn-info" (click)="openNewRegistroModal()">Adicionar Novo Registro</button>
+        </div>
+        <div *ngIf="!prontuarioAtual.registros || prontuarioAtual.registros.length === 0" class="no-data">
+          Nenhum registro encontrado para este animal.
+        </div>
+        <table *ngIf="prontuarioAtual.registros && prontuarioAtual.registros.length > 0" class="table">
+          <thead>
+          <tr>
+            <th>Data</th>
+            <th>Observações Clínicas</th>
+            <th>Veterinário</th>
+            <th>Ações</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let registro of prontuarioAtual.registros">
+            <td>{{ registro.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ registro.observacoesClinicas }}</td>
+            <td>{{ registro.nomeVeterinario }}</td>
+            <td class="actions">
+              <button class="btn btn-sm btn-info" (click)="openEditRegistroModal(registro)">Editar</button>
+              <button class="btn btn-sm btn-danger" (click)="deleteRegistro(registro.id)">Excluir</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showRegistroModal" class="modal-overlay" (click)="closeRegistroModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditingRegistro ? 'Editar Registro' : 'Adicionar Novo Registro' }}</h2>
+      <button class="modal-close-btn" (click)="closeRegistroModal()">×</button>
+    </div>
+    <form [formGroup]="registroForm" (ngSubmit)="onRegistroSubmit()">
+      <div class="form-group">
+        <label for="veterinarioResponsavelId">Veterinário Responsável:</label>
+        <select id="veterinarioResponsavelId" formControlName="veterinarioResponsavelId" class="form-control">
+          <option [ngValue]="null" disabled>Selecione um veterinário</option>
+          <option *ngFor="let vet of listaVeterinarios" [value]="vet.id">{{ vet.nome }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="dataHora">Data e Hora:</label>
+        <input type="datetime-local" id="dataHora" formControlName="dataHora" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="pesoNoDia">Peso no Dia (kg):</label>
+        <input type="number" id="pesoNoDia" formControlName="pesoNoDia" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="observacoesClinicas">Observações Clínicas:</label>
+        <textarea id="observacoesClinicas" formControlName="observacoesClinicas" class="form-control" rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="diagnostico">Diagnóstico:</label>
+        <textarea id="diagnostico" formControlName="diagnostico" class="form-control" rows="3"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="registroForm.invalid">Salvar Registro</button>
+        <button type="button" class="btn btn-secondary" (click)="closeRegistroModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>

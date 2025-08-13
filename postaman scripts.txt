@@ -1,0 +1,55 @@
+//clientes
+
+{
+    "nome": "Yurijube",
+    "cpf": "03780559130",
+    "dataNascimento": "2024-10-17",
+    "telefone": "984235112",
+    "email": "yurijube1e@gmail.com"
+}
+
+
+//animal
+{
+  "nome": "Totó",
+  "especie": "CANINO",
+  "porte": "PEQUENO",
+  "raca": "Vira-lata",
+  "sexo": "MACHO",
+  "peso": 8.5,
+  "castrado": true,
+  "dataNascimento": "2022-01-15",
+  "clienteId": 1
+}
+
+
+//funcionarios
+{
+    "nome": "Yurijube",
+    "cpf": "03780479130",
+    "dataNascimento": "2024-10-17",
+    "telefone": "984235112",
+    "email": "yurij4be11e@gmail.com",
+    "dataAdmissao" : "2024-10-17",
+    "cargoId" : 1,
+    "crmv" : "ijfhdsjfh3333"
+}
+
+//servicos
+{
+    "id": 1,
+    "tipo": "CONSULTA",
+    "valor": 300
+}
+
+
+//agendamentos
+{
+"animalId" : 1,
+"servicoId" : 1,
+"clienteId" : 1,
+"dataHoraAgendamento" : "2025-10-20T14:30:00",
+"observacoes" : "tralalal"
+}
+
+
