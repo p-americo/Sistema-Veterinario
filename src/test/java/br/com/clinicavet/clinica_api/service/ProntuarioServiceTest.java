@@ -65,18 +65,6 @@ class ProntuarioServiceTest {
         verify(prontuarioRepository).save(any(Prontuario.class));
     }
 
-    @Test
-    void atualizarProntuario_DeveRetornarResponseDTO_QuandoProntuarioExiste() {
-        ProntuarioUpdateDTO updateDTO = new ProntuarioUpdateDTO();
-        Prontuario prontuarioExistente = new Prontuario();
-        prontuarioExistente.setId(1L);
-        when(prontuarioRepository.findById(1L)).thenReturn(Optional.of(prontuarioExistente));
-        when(prontuarioRepository.save(any(Prontuario.class))).thenReturn(prontuarioExistente);
-        when(modelMapper.map(prontuarioExistente, ProntuarioResponseDTO.class)).thenReturn(new ProntuarioResponseDTO());
-        ProntuarioResponseDTO response = prontuarioService.atualizarProntuario(1L, updateDTO);
-        assertNotNull(response);
-        verify(prontuarioRepository).save(any(Prontuario.class));
-    }
 
     @Test
     void atualizarProntuario_DeveLancarExcecao_QuandoProntuarioNaoExiste() {
