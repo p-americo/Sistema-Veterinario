@@ -65,3 +65,4 @@ A arquitetura segue o padrão **MVC** e boas práticas de separação de respons
 ## Observações
 - Para ambiente de produção, configure o banco PostgreSQL em `application-prod.properties`.
 - Documentação dos endpoints pode ser acessada via ferramentas como Postman (veja exemplos em `Docs/postaman scripts.txt`).
+- A documentação interativa Swagger está em desenvolvimento e pode ser acessada em: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)

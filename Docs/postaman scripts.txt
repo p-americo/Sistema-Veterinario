@@ -1,40 +1,3 @@
-//clientes
-
-{
-    "nome": "Yurijube",
-    "cpf": "03780559130",
-    "dataNascimento": "2024-10-17",
-    "telefone": "984235112",
-    "email": "yurijube1e@gmail.com"
-}
-
-
-//animal
-{
-  "nome": "Totó",
-  "especie": "CANINO",
-  "porte": "PEQUENO",
-  "raca": "Vira-lata",
-  "sexo": "MACHO",
-  "peso": 8.5,
-  "castrado": true,
-  "dataNascimento": "2022-01-15",
-  "clienteId": 1
-}
-
-
-//funcionarios
-{
-    "nome": "Yurijube",
-    "cpf": "03780479130",
-    "dataNascimento": "2024-10-17",
-    "telefone": "984235112",
-    "email": "yurij4be11e@gmail.com",
-    "dataAdmissao" : "2024-10-17",
-    "cargoId" : 1,
-    "crmv" : "ijfhdsjfh3333"
-}
-
 //servicos
 {
     "id": 1,
@@ -52,4 +15,91 @@
 "observacoes" : "tralalal"
 }
 
+//cliente
+{
+    "nome": "João da Silva",
+    "cpf": "12345678901",
+    "telefone": "11999999999",
+    "email": "joao.silva@email.com",
+    "endereco": "Rua das Flores, 123, Centro, São Paulo, SP"
+}
 
+//animal
+{
+    "nome": "Rex",
+    "especie": "CACHORRO",
+    "raca": "Labrador",
+    "sexo": "MACHO",
+    "cor": "Amarelo",
+    "peso": 32.5,
+    "porte": "GRANDE",
+    "castrado": true,
+    "clienteId": 1
+}
+
+//funcionario
+{
+    "nome": "Maria Oliveira",
+    "cpf": "98765432100",
+    "telefone": "11988888888",
+    "email": "maria.oliveira@email.com",
+    "dataAdmissao": "2023-05-10",
+    "cargoId": 2,
+    "crmv": "CRMV12345"
+}
+
+//medicamento
+{
+    "nome": "Antibiótico X",
+    "fabricante": "Farmavet",
+    "descricao": "Antibiótico de amplo espectro",
+    "quantidadeEstoque": 50,
+    "dosagem": "20mg/kg"
+}
+
+//internacao
+{
+    "animalId": 1,
+    "dataEntrada": "2025-08-14T10:00:00",
+    "status": "ATIVA"
+}
+
+//diaria
+{
+    "internacaoId": 1,
+    "data": "2025-08-15",
+    "valor": 150.00
+}
+
+//prontuario
+{
+    "animalId": 1,
+    "alergiasConhecidas": "Nenhuma",
+    "condicoesPreexistentes": "Nenhuma"
+}
+
+//registro de prontuario
+{
+    "prontuarioId": 1,
+    "agendamentoId": 1,
+    "veterinarioResponsavelId": 2,
+    "dataHora": "2025-08-14T15:00:00",
+    "pesoNoDia": 32.5,
+    "observacoesClinicas": "Animal apresentou febre leve.",
+    "diagnostico": "Infecção bacteriana"
+}
+
+//cargo
+{
+    "nome": "Veterinário"
+}
+
+//administração de medicamento
+{
+    "registroProntuarioId": 1,
+    "medicamentoId": 1,
+    "quantidadeAdministrada": 2.5,
+    "funcionarioExecutorId": 3,
+    "dataHora": "2025-08-14T16:00:00",
+    "dosagem": "20mg/kg"
+}
