@@ -17,6 +17,8 @@ public class SwaggerConfig {
                         .description("Documentação da API da Clínica Veterinária"));
     }
 
+    //sla
+
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
