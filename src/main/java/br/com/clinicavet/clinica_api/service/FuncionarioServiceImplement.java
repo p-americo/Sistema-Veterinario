@@ -3,7 +3,6 @@ package br.com.clinicavet.clinica_api.service;
 import br.com.clinicavet.clinica_api.Execeptions.DataIntegrityViolationException;
 import br.com.clinicavet.clinica_api.dto.FuncionarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.FuncionarioResponseDTO;
-import br.com.clinicavet.clinica_api.dto.FuncionarioUpdateDTO;
 import br.com.clinicavet.clinica_api.model.Cargo;
 import br.com.clinicavet.clinica_api.model.Funcionario;
 import br.com.clinicavet.clinica_api.model.enums.EnumCargo;
@@ -12,7 +11,6 @@ import br.com.clinicavet.clinica_api.repository.FuncionarioRepository;
 import br.com.clinicavet.clinica_api.repository.PessoaRepository;
 import br.com.clinicavet.clinica_api.repository.ServicoRepository;
 import br.com.clinicavet.clinica_api.service.Interface.FuncionarioService;
-import br.com.clinicavet.clinica_api.model.enums.EnumCargo;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,11 +93,9 @@ public class FuncionarioServiceImplement implements FuncionarioService {
     }
 
     @Transactional
-    public FuncionarioResponseDTO atualizarFuncionario(Long id, FuncionarioUpdateDTO requestDTO) {
+    public FuncionarioResponseDTO atualizarFuncionario(Long id, FuncionarioRequestDTO requestDTO) {
         Funcionario funcionarioExistente = funcionarioRepository.findById(id)
                 .orElseThrow(() -> new DataIntegrityViolationException("Funcionário não encontrado para atualização com o ID: " + id));
-
-
         modelMapper.map(requestDTO, funcionarioExistente);
 
         if (requestDTO.getCargoId() != null) {

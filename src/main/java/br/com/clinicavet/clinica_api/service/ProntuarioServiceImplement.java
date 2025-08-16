@@ -3,7 +3,6 @@ package br.com.clinicavet.clinica_api.service;
 import br.com.clinicavet.clinica_api.Execeptions.DataIntegrityViolationException;
 import br.com.clinicavet.clinica_api.dto.ProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ProntuarioResponseDTO;
-import br.com.clinicavet.clinica_api.dto.ProntuarioUpdateDTO;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioResponseDTO;
 import br.com.clinicavet.clinica_api.model.Animal;
 import br.com.clinicavet.clinica_api.model.Prontuario;
@@ -57,11 +56,11 @@ public class ProntuarioServiceImplement implements ProntuarioServiceInterface {
 
     @Override
     @Transactional
-    public ProntuarioResponseDTO atualizarProntuario(Long id, ProntuarioUpdateDTO prontuarioUpdateDTO) {
+    public ProntuarioResponseDTO atualizarProntuario(Long id, ProntuarioRequestDTO prontuarioRequestDTO) {
         Prontuario prontuarioExistente = prontuarioRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Prontuário não encontrado com o ID: " + id));
 
-        modelMapper.map(prontuarioUpdateDTO, prontuarioExistente);
+        modelMapper.map(prontuarioRequestDTO, prontuarioExistente);
 
         Prontuario prontuarioAtualizado = prontuarioRepository.save(prontuarioExistente);
         return mapEntidadeParaResponse(prontuarioAtualizado);

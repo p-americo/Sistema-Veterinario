@@ -2,9 +2,7 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.AnimalRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AnimalResponseDTO;
-import br.com.clinicavet.clinica_api.dto.AnimalUpdateDTO;
 import br.com.clinicavet.clinica_api.service.AnimalServiceImplement;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/animais")
 public class AnimalController {
 
-    private AnimalServiceImplement animalServiceImplement;
+    private final AnimalServiceImplement animalServiceImplement;
 
     @Autowired
     public AnimalController(AnimalServiceImplement animalServiceImplement) {
@@ -25,7 +23,7 @@ public class AnimalController {
     }
 
     @PostMapping
-    public ResponseEntity<AnimalResponseDTO> criarAnimal(@RequestBody @Valid AnimalRequestDTO animalRequestDTO, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<AnimalResponseDTO> criarAnimal(@RequestBody AnimalRequestDTO animalRequestDTO, UriComponentsBuilder uriComponentsBuilder) {
         AnimalResponseDTO responseDTO = animalServiceImplement.criarAnimal(animalRequestDTO);
 
         URI uri = uriComponentsBuilder.path("/api/animais/{id}").buildAndExpand(responseDTO.getId()).toUri();
@@ -48,7 +46,7 @@ public class AnimalController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnimalResponseDTO> atualizarAnimal(@PathVariable long id, @RequestBody @Valid AnimalUpdateDTO animalDTO) {
+    public ResponseEntity<AnimalResponseDTO> atualizarAnimal(@PathVariable long id, @RequestBody AnimalRequestDTO animalDTO) {
 
         AnimalResponseDTO responseDTO = animalServiceImplement.atualizarAnimal(id, animalDTO);
         return ResponseEntity.ok().body(responseDTO);

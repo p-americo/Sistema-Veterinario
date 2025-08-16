@@ -3,7 +3,6 @@ package br.com.clinicavet.clinica_api.service;
 
 import br.com.clinicavet.clinica_api.dto.AgendamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AgendamentoResponseDTO;
-import br.com.clinicavet.clinica_api.dto.AgendamentoUpdateDTO;
 import br.com.clinicavet.clinica_api.model.*; // EAnimal, ECliente, EServico, EAgendamento
 import br.com.clinicavet.clinica_api.model.enums.EnumAgendamento; // Importe seu Enum de Status
 import br.com.clinicavet.clinica_api.repository.*; // Todos os repositórios
@@ -116,10 +115,10 @@ public class AgendamentoServiceImplement implements AgendamentoService {
     }
 
     @Transactional
-    public AgendamentoResponseDTO atualizarAgendamento(Long id, AgendamentoUpdateDTO updateDTO) {
+    public AgendamentoResponseDTO atualizarAgendamento(Long id, AgendamentoRequestDTO updateDTO) {
 
         Agendamento agendamentoExistente = agendamentoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Agendamento não encontrado para atualização com o ID: " + id));
+                .orElseThrow(() -> new NoSuchElementException("Agendamento não encontrado com o ID: " + id));
 
         if (agendamentoExistente.getStatus() == EnumAgendamento.CANCELADO ||
                 agendamentoExistente.getStatus() == EnumAgendamento.REALIZADO) {

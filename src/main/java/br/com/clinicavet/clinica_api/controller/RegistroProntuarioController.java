@@ -2,7 +2,6 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioResponseDTO;
-import br.com.clinicavet.clinica_api.dto.RegistroProntuarioUpdateDTO;
 import br.com.clinicavet.clinica_api.service.RegistroProntuarioServiceImplement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class RegistroProntuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<RegistroProntuarioResponseDTO> criarRegistro(@RequestBody @Valid RegistroProntuarioRequestDTO registroRequestDTO, 
+    public ResponseEntity<RegistroProntuarioResponseDTO> criarRegistro(@RequestBody @Valid RegistroProntuarioRequestDTO registroRequestDTO,
                                                                       UriComponentsBuilder uriComponentsBuilder) {
         RegistroProntuarioResponseDTO responseDTO = registroProntuarioService.criarRegistro(registroRequestDTO);
 
@@ -81,9 +80,9 @@ public class RegistroProntuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RegistroProntuarioResponseDTO> atualizarRegistro(@PathVariable Long id, 
-                                                                          @RequestBody @Valid RegistroProntuarioUpdateDTO registroUpdateDTO) {
-        RegistroProntuarioResponseDTO responseDTO = registroProntuarioService.atualizarRegistro(id, registroUpdateDTO);
+    public ResponseEntity<RegistroProntuarioResponseDTO> atualizarRegistro(@PathVariable Long id,
+                                                                          @RequestBody @Valid RegistroProntuarioRequestDTO registroRequestDTO) {
+        RegistroProntuarioResponseDTO responseDTO = registroProntuarioService.atualizarRegistro(id, registroRequestDTO);
         return ResponseEntity.ok().body(responseDTO);
     }
 

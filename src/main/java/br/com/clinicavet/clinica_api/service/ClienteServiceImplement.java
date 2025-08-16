@@ -3,7 +3,6 @@ package br.com.clinicavet.clinica_api.service;
 import br.com.clinicavet.clinica_api.Execeptions.DataIntegrityViolationException;
 import br.com.clinicavet.clinica_api.dto.ClienteRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ClienteResponseDTO;
-import br.com.clinicavet.clinica_api.dto.ClienteUpdateDTO;
 import br.com.clinicavet.clinica_api.model.Cliente;
 import br.com.clinicavet.clinica_api.repository.ClienteRepository;
 import br.com.clinicavet.clinica_api.repository.PessoaRepository;
@@ -70,7 +69,7 @@ public class ClienteServiceImplement implements ClienteService {
     }
 
     @Transactional
-    public ClienteResponseDTO atualizarCliente(Long id, ClienteUpdateDTO clienteRequestDTO) {
+    public ClienteResponseDTO atualizarCliente(Long id, ClienteRequestDTO clienteRequestDTO) {
         Cliente clienteExistente = clienteRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado para atualização com o ID: " + id));
 

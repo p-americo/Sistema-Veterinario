@@ -3,7 +3,6 @@ package br.com.clinicavet.clinica_api.service;
 import br.com.clinicavet.clinica_api.Execeptions.DataIntegrityViolationException;
 import br.com.clinicavet.clinica_api.dto.AnimalRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AnimalResponseDTO;
-import br.com.clinicavet.clinica_api.dto.AnimalUpdateDTO;
 import br.com.clinicavet.clinica_api.model.Animal;
 import br.com.clinicavet.clinica_api.model.Cliente;
 import br.com.clinicavet.clinica_api.repository.AnimalRepository;
@@ -13,7 +12,6 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal; // Importe BigDecimal
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
@@ -66,20 +64,14 @@ public class AnimalServiceImplement implements AnimalService {
     }
 
     @Transactional
-    public AnimalResponseDTO atualizarAnimal(Long animalId, AnimalUpdateDTO animalDTO) {
+    public AnimalResponseDTO atualizarAnimal(Long animalId, AnimalRequestDTO animalDTO) {
         Animal animalExistente = animalRepository.findById(animalId)
                 .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com o ID: " + animalId));
-
-        // Esta validação pode ser refinada para permitir atualização do mesmo animal
-        // if (animalRepository.existsByNome(animalDTO.getNome()) && animalRepository.existsByClienteId(animalDTO.getClienteId())) {
-        //     throw new DataIntegrityViolationException("Animal ja cadastrado no mesmo cliente");
-        // }
         modelMapper.map(animalDTO, animalExistente);
-
         if (animalDTO.getClienteId() != null) {
             if (animalExistente.getCliente() == null || !animalDTO.getClienteId().equals(animalExistente.getCliente().getId())) {
                 Cliente novoCliente = clienteRepository.findById(animalDTO.getClienteId())
-                        .orElseThrow(() -> new NoSuchElementException("Novo cliente (dono) não encontrado com o ID: " + animalDTO.getClienteId()));
+                        .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado com o ID: " + animalDTO.getClienteId()));
                 animalExistente.setCliente(novoCliente);
             }
         }

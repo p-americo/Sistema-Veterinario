@@ -3,7 +3,6 @@ package br.com.clinicavet.clinica_api.service;
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoResponseDTO;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioResponseDTO;
-import br.com.clinicavet.clinica_api.dto.RegistroProntuarioUpdateDTO;
 import br.com.clinicavet.clinica_api.model.*;
 import br.com.clinicavet.clinica_api.repository.*;
 import br.com.clinicavet.clinica_api.service.Interface.RegistroProntuarioServiceInterface;
@@ -74,33 +73,27 @@ public class RegistroProntuarioServiceImplement implements RegistroProntuarioSer
 
     @Override
     @Transactional
-    public RegistroProntuarioResponseDTO atualizarRegistro(Long id, RegistroProntuarioUpdateDTO registroUpdateDTO) {
+    public RegistroProntuarioResponseDTO atualizarRegistro(Long id, RegistroProntuarioRequestDTO registroRequestDTO) {
         RegistroProntuario registroExistente = registroProntuarioRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Registro do prontuário não encontrado com o ID: " + id));
 
+        modelMapper.map(registroRequestDTO, registroExistente);
 
-
-        if (registroUpdateDTO.getDataHora() != null) registroExistente.setDataHora(registroUpdateDTO.getDataHora());
-        if (registroUpdateDTO.getPesoNoDia() != null) registroExistente.setPesoNoDia(registroUpdateDTO.getPesoNoDia());
-        if (registroUpdateDTO.getObservacoesClinicas() != null) registroExistente.setObservacoesClinicas(registroUpdateDTO.getObservacoesClinicas());
-        if (registroUpdateDTO.getDiagnostico() != null) registroExistente.setDiagnostico(registroUpdateDTO.getDiagnostico());
-
-
-        if (registroUpdateDTO.getVeterinarioResponsavelId() != null) {
-            Funcionario veterinario = funcionarioRepository.findById(registroUpdateDTO.getVeterinarioResponsavelId())
-                    .orElseThrow(() -> new NoSuchElementException("Veterinário não encontrado com o ID: " + registroUpdateDTO.getVeterinarioResponsavelId()));
+        if (registroRequestDTO.getVeterinarioResponsavelId() != null) {
+            Funcionario veterinario = funcionarioRepository.findById(registroRequestDTO.getVeterinarioResponsavelId())
+                    .orElseThrow(() -> new NoSuchElementException("Veterinário não encontrado com o ID: " + registroRequestDTO.getVeterinarioResponsavelId()));
             registroExistente.setVeterinarioResponsavel(veterinario);
         }
 
-        if (registroUpdateDTO.getAgendamentoId() != null) {
-            Agendamento agendamento = agendamentoRepository.findById(registroUpdateDTO.getAgendamentoId())
-                    .orElseThrow(() -> new NoSuchElementException("Agendamento não encontrado com o ID: " + registroUpdateDTO.getAgendamentoId()));
+        if (registroRequestDTO.getAgendamentoId() != null) {
+            Agendamento agendamento = agendamentoRepository.findById(registroRequestDTO.getAgendamentoId())
+                    .orElseThrow(() -> new NoSuchElementException("Agendamento não encontrado com o ID: " + registroRequestDTO.getAgendamentoId()));
             registroExistente.setAgendamento(agendamento);
         }
 
-        if (registroUpdateDTO.getInternacaoId() != null) {
-            Internacao internacao = internacaoRepository.findById(registroUpdateDTO.getInternacaoId())
-                    .orElseThrow(() -> new NoSuchElementException("Internação não encontrada com o ID: " + registroUpdateDTO.getInternacaoId()));
+        if (registroRequestDTO.getInternacaoId() != null) {
+            Internacao internacao = internacaoRepository.findById(registroRequestDTO.getInternacaoId())
+                    .orElseThrow(() -> new NoSuchElementException("Internação não encontrada com o ID: " + registroRequestDTO.getInternacaoId()));
             registroExistente.setInternacao(internacao);
         }
 

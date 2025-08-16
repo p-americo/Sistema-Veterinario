@@ -2,7 +2,6 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.AgendamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AgendamentoResponseDTO;
-import br.com.clinicavet.clinica_api.dto.AgendamentoUpdateDTO;
 import br.com.clinicavet.clinica_api.service.AgendamentoServiceImplement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +59,7 @@ public class AgendamentoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AgendamentoResponseDTO> atualizarAgendamento(@PathVariable Long id, @RequestBody @Valid AgendamentoUpdateDTO updateDTO) {
+    public ResponseEntity<AgendamentoResponseDTO> atualizarAgendamento(@PathVariable Long id, @RequestBody AgendamentoRequestDTO updateDTO) {
         AgendamentoResponseDTO responseDTO = agendamentoServiceImplement.atualizarAgendamento(id, updateDTO);
         return ResponseEntity.ok(responseDTO);
     }

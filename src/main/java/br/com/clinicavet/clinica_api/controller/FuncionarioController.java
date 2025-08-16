@@ -2,9 +2,7 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.FuncionarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.FuncionarioResponseDTO;
-import br.com.clinicavet.clinica_api.dto.FuncionarioUpdateDTO;
 import br.com.clinicavet.clinica_api.service.FuncionarioServiceImplement;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -24,7 +22,7 @@ public class FuncionarioController {
     }
 
     @PostMapping
-    public ResponseEntity<FuncionarioResponseDTO> criarFuncionario(@RequestBody @Valid FuncionarioRequestDTO requestDTO, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<FuncionarioResponseDTO> criarFuncionario(@RequestBody FuncionarioRequestDTO requestDTO, UriComponentsBuilder uriBuilder) {
         FuncionarioResponseDTO responseDTO = funcionarioServiceImplement.criarFuncionario(requestDTO);
         URI uri = uriBuilder.path("/api/funcionarios/{id}").buildAndExpand(responseDTO.getId()).toUri();
         return ResponseEntity.created(uri).body(responseDTO);
@@ -47,7 +45,7 @@ public class FuncionarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FuncionarioResponseDTO> atualizarFuncionario(@PathVariable Long id, @RequestBody @Valid FuncionarioUpdateDTO requestDTO) {
+    public ResponseEntity<FuncionarioResponseDTO> atualizarFuncionario(@PathVariable Long id, @RequestBody FuncionarioRequestDTO requestDTO) {
         FuncionarioResponseDTO responseDTO = funcionarioServiceImplement.atualizarFuncionario(id, requestDTO);
         return ResponseEntity.ok(responseDTO);
     }

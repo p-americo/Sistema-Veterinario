@@ -2,7 +2,6 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.ProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ProntuarioResponseDTO;
-import br.com.clinicavet.clinica_api.dto.ProntuarioUpdateDTO;
 import br.com.clinicavet.clinica_api.service.ProntuarioServiceImplement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +59,8 @@ public class ProntuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProntuarioResponseDTO> atualizarProntuario(@PathVariable Long id, 
-                                                                   @RequestBody @Valid ProntuarioUpdateDTO prontuarioUpdateDTO) {
-        ProntuarioResponseDTO responseDTO = prontuarioService.atualizarProntuario(id, prontuarioUpdateDTO);
+                                                                   @RequestBody @Valid ProntuarioRequestDTO prontuarioRequestDTO) {
+        ProntuarioResponseDTO responseDTO = prontuarioService.atualizarProntuario(id, prontuarioRequestDTO);
         return ResponseEntity.ok().body(responseDTO);
     }
 

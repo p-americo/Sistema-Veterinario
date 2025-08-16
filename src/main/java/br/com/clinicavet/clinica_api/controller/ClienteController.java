@@ -2,9 +2,7 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.ClienteRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ClienteResponseDTO;
-import br.com.clinicavet.clinica_api.dto.ClienteUpdateDTO;
 import br.com.clinicavet.clinica_api.service.ClienteServiceImplement;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +23,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteResponseDTO> criarCliente(@RequestBody @Valid ClienteRequestDTO clienteRequestDTO, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<ClienteResponseDTO> criarCliente(@RequestBody ClienteRequestDTO clienteRequestDTO, UriComponentsBuilder uriBuilder) {
         ClienteResponseDTO responseDTO = clienteServiceImplement.criarCliente(clienteRequestDTO);
         URI uri = uriBuilder.path("/api/clientes/{id}").buildAndExpand(responseDTO.getId()).toUri();
         return ResponseEntity.created(uri).body(responseDTO);
@@ -50,7 +48,7 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteResponseDTO> atualizarCliente(@PathVariable Long id, @RequestBody @Valid ClienteUpdateDTO UpdateRequestDTO) {
+    public ResponseEntity<ClienteResponseDTO> atualizarCliente(@PathVariable Long id, @RequestBody ClienteRequestDTO UpdateRequestDTO) {
         ClienteResponseDTO responseDTO = clienteServiceImplement.atualizarCliente(id, UpdateRequestDTO);
         return ResponseEntity.ok(responseDTO);
     }

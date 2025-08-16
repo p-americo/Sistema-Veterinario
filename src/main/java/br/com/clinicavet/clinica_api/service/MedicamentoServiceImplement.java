@@ -39,28 +39,27 @@ public class MedicamentoServiceImplement implements MedicamentoService {
             throw new DataIntegrityViolationException("Já existe um produto cadastrado com o nome: " + dto.getNome());
         }
 
+
         Produto novoProduto = new Produto();
         novoProduto.setNome(dto.getNome());
         novoProduto.setDescricao(dto.getDescricao());
         novoProduto.setQuantidadeEstoque(dto.getQuantidadeEstoque());
 
         Medicamento novoMedicamento = new Medicamento();
-        novoMedicamento.setCategoria(dto.getCategoria());
-        novoMedicamento.setViaAdministracao(dto.getViaAdministracao());
-        novoMedicamento.setDosagemPadrao(dto.getDosagemPadrao());
-        novoMedicamento.setPrincipioAtivo(dto.getPrincipioAtivo());
-        novoMedicamento.setPrescricaoObrigatoria(dto.getPrescricaoObrigatoria());
-
+        modelMapper.map(dto, novoMedicamento);
+        novoMedicamento.setId(null);
         novoMedicamento.setProduto(novoProduto);
 
         Medicamento medicamentoSalvo = medicamentoRepository.save(novoMedicamento);
+
+
 
         return mapEntidadeParaResponse(medicamentoSalvo);
     }
 
     @Override
     @Transactional
-    public MedicamentoResponseDTO atualizarMedicamento(Long id, MedicamentoUpdateDTO dto) {
+    public MedicamentoResponseDTO atualizarMedicamento(Long id, MedicamentoRequestDTO dto) {
         Medicamento medicamentoExistente = medicamentoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Medicamento não encontrado com o ID: " + id));
 

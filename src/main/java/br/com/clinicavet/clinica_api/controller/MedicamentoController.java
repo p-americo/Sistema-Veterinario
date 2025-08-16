@@ -48,8 +48,8 @@ public class MedicamentoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MedicamentoResponseDTO> atualizarMedicamento(@PathVariable Long id,
-                                                                       @RequestBody @Valid MedicamentoUpdateDTO medicamentoUpdateDTO) {
-        MedicamentoResponseDTO responseDTO = medicamentoService.atualizarMedicamento(id, medicamentoUpdateDTO);
+                                                                       @RequestBody @Valid MedicamentoRequestDTO medicamentoRequestDTO) {
+        MedicamentoResponseDTO responseDTO = medicamentoService.atualizarMedicamento(id, medicamentoRequestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 

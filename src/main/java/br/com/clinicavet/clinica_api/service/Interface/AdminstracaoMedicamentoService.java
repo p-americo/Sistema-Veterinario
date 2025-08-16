@@ -2,7 +2,6 @@ package br.com.clinicavet.clinica_api.service.Interface;
 
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoResponseDTO;
-import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoUpdateDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,8 +9,6 @@ import java.util.List;
 public interface AdminstracaoMedicamentoService {
     
     AdministracaoMedicamentoResponseDTO criarAdministracao(AdministracaoMedicamentoRequestDTO administracaoRequestDTO);
-    
-    AdministracaoMedicamentoResponseDTO atualizarAdministracao(Long id, AdministracaoMedicamentoUpdateDTO administracaoUpdateDTO);
     
     void deletarAdministracao(Long id);
     
@@ -26,4 +23,6 @@ public interface AdminstracaoMedicamentoService {
     List<AdministracaoMedicamentoResponseDTO> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
     
     List<AdministracaoMedicamentoResponseDTO> listarTodos();
+
+    AdministracaoMedicamentoResponseDTO atualizarAdministracao(Long id, AdministracaoMedicamentoRequestDTO dto);
 }

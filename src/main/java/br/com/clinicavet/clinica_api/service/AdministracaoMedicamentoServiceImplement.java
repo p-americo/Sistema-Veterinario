@@ -2,7 +2,6 @@ package br.com.clinicavet.clinica_api.service;
 
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoResponseDTO;
-import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoUpdateDTO;
 import br.com.clinicavet.clinica_api.model.AdministracaoMedicamento;
 import br.com.clinicavet.clinica_api.model.Funcionario;
 import br.com.clinicavet.clinica_api.model.Medicamento;
@@ -66,7 +65,7 @@ public class AdministracaoMedicamentoServiceImplement implements AdminstracaoMed
 
     @Override
     @Transactional
-    public AdministracaoMedicamentoResponseDTO atualizarAdministracao(Long id, AdministracaoMedicamentoUpdateDTO dto) {
+    public AdministracaoMedicamentoResponseDTO atualizarAdministracao(Long id, AdministracaoMedicamentoRequestDTO dto) {
         AdministracaoMedicamento administracaoExistente = administracaoMedicamentoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Administração de medicamento não encontrada com o ID: " + id));
 
@@ -77,7 +76,6 @@ public class AdministracaoMedicamentoServiceImplement implements AdminstracaoMed
                     .orElseThrow(() -> new NoSuchElementException("Funcionário executor não encontrado com o ID: " + dto.getFuncionarioExecutorId()));
             administracaoExistente.setFuncionarioExecutor(funcionarioExecutor);
         }
-
 
         if (dto.getMedicamentoId() != null) {
             Medicamento medicamento = medicamentoRepository.findById(dto.getMedicamentoId())
