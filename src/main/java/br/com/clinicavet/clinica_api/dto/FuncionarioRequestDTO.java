@@ -39,4 +39,8 @@ public class FuncionarioRequestDTO {
 
     @NotNull(message = "O ID do cargo é obrigatório.")
     private Long cargoId; // << Recebemos o ID do cargo
+
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).*$",
+            message = "A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial.")
+    private String senha;
 }

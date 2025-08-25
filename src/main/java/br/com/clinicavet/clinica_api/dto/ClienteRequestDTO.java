@@ -27,5 +27,9 @@ public class ClienteRequestDTO {
     @Size(max = 100)
     private String email;
 
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).*$",
+            message = "A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial.")
+    private String senha;
+
 
 }
