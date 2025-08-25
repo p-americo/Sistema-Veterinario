@@ -2,7 +2,6 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoResponseDTO;
-import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoUpdateDTO;
 import br.com.clinicavet.clinica_api.service.AdministracaoMedicamentoServiceImplement;
 import br.com.clinicavet.clinica_api.service.Interface.AdminstracaoMedicamentoService;
 import jakarta.validation.Valid;

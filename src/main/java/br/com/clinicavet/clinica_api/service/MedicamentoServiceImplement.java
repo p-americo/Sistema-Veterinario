@@ -3,7 +3,6 @@ package br.com.clinicavet.clinica_api.service;
 import br.com.clinicavet.clinica_api.Execeptions.DataIntegrityViolationException;
 import br.com.clinicavet.clinica_api.dto.MedicamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.MedicamentoResponseDTO;
-import br.com.clinicavet.clinica_api.dto.MedicamentoUpdateDTO;
 import br.com.clinicavet.clinica_api.model.Medicamento;
 import br.com.clinicavet.clinica_api.model.Produto;
 import br.com.clinicavet.clinica_api.repository.MedicamentoRepository;

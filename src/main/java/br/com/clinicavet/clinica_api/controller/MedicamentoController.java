@@ -2,7 +2,6 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.MedicamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.MedicamentoResponseDTO;
-import br.com.clinicavet.clinica_api.dto.MedicamentoUpdateDTO;
 import br.com.clinicavet.clinica_api.service.Interface.MedicamentoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

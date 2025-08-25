@@ -21,7 +21,7 @@ public class AgendamentoRequestDTO {
         @NotNull
         private Long clienteId;
 
-        @NotNull @Future
+        @NotNull @Future(message = "A nova data do agendamento deve ser futura.")
         private LocalDateTime dataHoraAgendamento;
 
         @Size(max = 255)
