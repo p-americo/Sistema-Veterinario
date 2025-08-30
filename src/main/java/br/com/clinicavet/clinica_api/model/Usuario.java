@@ -1,6 +1,7 @@
 package br.com.clinicavet.clinica_api.model;
 
 import br.com.clinicavet.clinica_api.model.enums.EnumUsuarioRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -38,6 +39,7 @@ public class Usuario implements UserDetails {
 
     @OneToOne
     @JoinColumn(name = "pessoa_id", referencedColumnName = "id")
+    @JsonIgnore
     private Pessoa pessoa;
 
     // MÉTODOS DA INTERFACE UserDetails

@@ -33,7 +33,6 @@ public class EnumController {
         return EnumSexo.values();
     }
 
-
     @GetMapping("/agendamento-status")
     public EnumAgendamento[] getAgendamentoStatus() {
         return EnumAgendamento.values();

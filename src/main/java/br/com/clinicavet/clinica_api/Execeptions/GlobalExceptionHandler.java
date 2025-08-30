@@ -26,9 +26,9 @@ public class GlobalExceptionHandler {
     // Handler para violação de integridade/dados duplicados (nosso erro de CPF)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex) {
-        ErrorResponse resposta = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+        ErrorResponse resposta = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         // Retorna um status HTTP 409 Conflict, que é apropriado para dados duplicados
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(resposta);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
     }
 
     // Handler para outros erros de validação de negócio que você possa ter

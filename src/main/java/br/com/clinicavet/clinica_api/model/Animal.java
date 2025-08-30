@@ -3,6 +3,7 @@ package br.com.clinicavet.clinica_api.model;
 import br.com.clinicavet.clinica_api.model.enums.EnumPorte;
 import br.com.clinicavet.clinica_api.model.enums.EnumEspecie;
 import br.com.clinicavet.clinica_api.model.enums.EnumSexo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -59,7 +60,9 @@ public class Animal {
     @OneToOne(mappedBy = "animal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Prontuario prontuario;
 
+    // Inverse side of the relationship
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 

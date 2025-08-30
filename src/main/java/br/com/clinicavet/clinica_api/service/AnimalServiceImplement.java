@@ -56,6 +56,8 @@ public class AnimalServiceImplement implements AnimalService {
     }
 
 
+
+
     @Override
     public List<AnimalResponseDTO> listarTodos() {
         return animalRepository.findAll().stream()
@@ -63,7 +65,7 @@ public class AnimalServiceImplement implements AnimalService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Override
     public AnimalResponseDTO atualizarAnimal(Long animalId, AnimalRequestDTO animalDTO) {
         Animal animalExistente = animalRepository.findById(animalId)
                 .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com o ID: " + animalId));

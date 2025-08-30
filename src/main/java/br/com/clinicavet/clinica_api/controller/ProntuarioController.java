@@ -2,7 +2,7 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.ProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ProntuarioResponseDTO;
-import br.com.clinicavet.clinica_api.service.ProntuarioServiceImplement;
+import br.com.clinicavet.clinica_api.service.Interface.ProntuarioServiceInterface;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +16,10 @@ import java.util.List;
 @RequestMapping("/api/prontuarios")
 public class ProntuarioController {
 
-    private final ProntuarioServiceImplement prontuarioService;
+    private final ProntuarioServiceInterface prontuarioService;
 
     @Autowired
-    public ProntuarioController(ProntuarioServiceImplement prontuarioService) {
+    public ProntuarioController(ProntuarioServiceInterface prontuarioService) {
         this.prontuarioService = prontuarioService;
     }
 

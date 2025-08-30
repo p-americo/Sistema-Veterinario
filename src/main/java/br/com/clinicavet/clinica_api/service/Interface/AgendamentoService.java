@@ -21,6 +21,7 @@ public interface AgendamentoService {
 
     AgendamentoResponseDTO realizarAgendamento(Long id);
 
+    AgendamentoResponseDTO atualizarAgendamento(Long id, AgendamentoRequestDTO updateDTO);
 
 
 }

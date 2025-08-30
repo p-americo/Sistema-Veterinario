@@ -8,7 +8,10 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     // Search per cpf or crmv
+    // return object "Usuario"
     Optional<Usuario> findByLogin(String login);
+
+    boolean existsByLogin(String login);
 
 
 }

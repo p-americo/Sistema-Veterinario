@@ -36,12 +36,14 @@ public class AuthenticationController {
 
 
         // Used bean AuthenticationManager to authenticate the user
-        // This will call the UserDetailsService in AuthenticationService to load the user and check the password
-        // Compare the password in (passwordEncoder), if the password is correct, it will return an Authentication object
+        // This will call the UserDetailsService in (AuthenticationService) to load the user and check the password
+        // Compare the password in Bean(passwordEncoder)
+        // If the password is correct, it will return an Authentication object
         // If the password is incorrect, it will throw an exception
         var authentication = manager.authenticate(authenticationToken);
 
-
+        // getPricipal() returns the authenticated user object generic (Usuario)
+        // We cast it to Usuario
         var usuario = (Usuario) authentication.getPrincipal();
 
         var tokenJWT = tokenService.gerarToken(usuario);

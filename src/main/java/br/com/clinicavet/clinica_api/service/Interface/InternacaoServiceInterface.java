@@ -18,4 +18,8 @@ public interface InternacaoServiceInterface {
     List<InternacaoResponseDTO> listarTodas();
 
     void deletarInternacao(Long id);
+
+    InternacaoResponseDTO buscarInternacaoAtivaPorAnimalId(Long animalId);
+
+    InternacaoResponseDTO darAltaInternacao(Long id);
 }

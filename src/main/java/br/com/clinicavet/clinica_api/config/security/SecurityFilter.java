@@ -27,6 +27,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         var tokenJWT = recuperarToken(request);
 
         if (tokenJWT != null) {
@@ -49,6 +50,9 @@ public class SecurityFilter extends OncePerRequestFilter {
             // Remove o prefixo "Bearer " para obter apenas o token
             return authorizationHeader.replace("Bearer ", "");
         }
+        // If there is no token AuthorizationFilter (spring) see SecurityContextHolder is null
+        // Consult SecurityConfigurations for more details, if the request is to a protected endpoint
+        // return not authorized
         return null;
     }
 }
