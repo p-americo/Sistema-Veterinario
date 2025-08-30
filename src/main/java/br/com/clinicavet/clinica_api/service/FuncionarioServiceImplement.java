@@ -1,6 +1,7 @@
 package br.com.clinicavet.clinica_api.service;
 
 import br.com.clinicavet.clinica_api.Execeptions.DataIntegrityViolationException;
+import br.com.clinicavet.clinica_api.dto.FuncionarioUpdateDTO;
 import br.com.clinicavet.clinica_api.dto.FuncionarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.FuncionarioResponseDTO;
 import br.com.clinicavet.clinica_api.model.Cargo;
@@ -11,6 +12,7 @@ import br.com.clinicavet.clinica_api.repository.FuncionarioRepository;
 import br.com.clinicavet.clinica_api.repository.PessoaRepository;
 import br.com.clinicavet.clinica_api.repository.ServicoRepository;
 import br.com.clinicavet.clinica_api.service.Interface.FuncionarioService;
+import br.com.clinicavet.clinica_api.service.Interface.UsuarioService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +29,15 @@ public class FuncionarioServiceImplement implements FuncionarioService {
     private final ModelMapper modelMapper;
     private final ServicoRepository servicoRepository;
     private final PessoaRepository pessoaRepository;
+    private final UsuarioService usuarioService;
 
-    public FuncionarioServiceImplement(FuncionarioRepository funcionarioRepository, CargoRepository cargoRepository, ModelMapper modelMapper, ServicoRepository servicoRepository,  PessoaRepository pessoaRepository) {
+    public FuncionarioServiceImplement(FuncionarioRepository funcionarioRepository, CargoRepository cargoRepository, ModelMapper modelMapper, ServicoRepository servicoRepository,  PessoaRepository pessoaRepository, UsuarioService usuarioService) {
         this.funcionarioRepository = funcionarioRepository;
         this.cargoRepository = cargoRepository;
         this.modelMapper = modelMapper;
         this.servicoRepository = servicoRepository;
         this.pessoaRepository = pessoaRepository;
+        this.usuarioService = usuarioService;
     }
 
 
@@ -66,6 +70,8 @@ public class FuncionarioServiceImplement implements FuncionarioService {
         novoFuncionario.setCargo(cargo);
 
         Funcionario funcionarioSalvo = funcionarioRepository.save(novoFuncionario);
+        // Employee is a type of Pessoa, so we can create a user for them
+        usuarioService.criarUsuarioFuncionario(requestDTO, funcionarioSalvo);
         return modelMapper.map(funcionarioSalvo, FuncionarioResponseDTO.class);
     }
 
@@ -93,19 +99,29 @@ public class FuncionarioServiceImplement implements FuncionarioService {
     }
 
     @Transactional
-    public FuncionarioResponseDTO atualizarFuncionario(Long id, FuncionarioRequestDTO requestDTO) {
+    public FuncionarioResponseDTO atualizarFuncionario(Long id, FuncionarioUpdateDTO dto) {
         Funcionario funcionarioExistente = funcionarioRepository.findById(id)
                 .orElseThrow(() -> new DataIntegrityViolationException("Funcionário não encontrado para atualização com o ID: " + id));
-        modelMapper.map(requestDTO, funcionarioExistente);
 
-        if (requestDTO.getCargoId() != null) {
-            if (!requestDTO.getCargoId().equals(funcionarioExistente.getCargo().getId())) {
-                Cargo novoCargo = cargoRepository.findById(requestDTO.getCargoId())
-                        .orElseThrow(() -> new DataIntegrityViolationException("Novo cargo não encontrado com o ID: " + requestDTO.getCargoId()));
-                funcionarioExistente.setCargo(novoCargo);
-                if (novoCargo.getCargo() != EnumCargo.VETERINARIO) {
-                    funcionarioExistente.setCrmv(null);
-                }
+        // Validação de CPF/email duplicado
+        if (dto.getCpf() != null && !dto.getCpf().equals(funcionarioExistente.getCpf()) && pessoaRepository.existsByCpf(dto.getCpf())) {
+            throw new DataIntegrityViolationException("CPF já cadastrado no sistema.");
+        }
+        if (dto.getEmail() != null && !dto.getEmail().equals(funcionarioExistente.getEmail()) && pessoaRepository.existsByEmail(dto.getEmail())) {
+            throw new DataIntegrityViolationException("Email já cadastrado no sistema");
+        }
+        if (dto.getCrmv() != null && !dto.getCrmv().equals(funcionarioExistente.getCrmv()) && funcionarioRepository.existsByCrmv(dto.getCrmv())) {
+            throw new DataIntegrityViolationException("CRMV já cadastrado no sistema.");
+        }
+
+       modelMapper.map(dto, funcionarioExistente);
+
+        if (dto.getCargoId() != null && !dto.getCargoId().equals(funcionarioExistente.getCargo().getId())) {
+            Cargo novoCargo = cargoRepository.findById(dto.getCargoId())
+                    .orElseThrow(() -> new DataIntegrityViolationException("Novo cargo não encontrado com o ID: " + dto.getCargoId()));
+            funcionarioExistente.setCargo(novoCargo);
+            if (novoCargo.getCargo() != EnumCargo.VETERINARIO) {
+                funcionarioExistente.setCrmv(null);
             }
         }
         Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionarioExistente);

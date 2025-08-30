@@ -15,6 +15,9 @@ public interface AnimalService {
 
     List<AnimalResponseDTO> listarTodos();
 
+    AnimalResponseDTO buscarAnimalPorId(long id);
+
+    AnimalResponseDTO atualizarAnimal(Long animalId, AnimalRequestDTO animalDTO);
 
 
 }

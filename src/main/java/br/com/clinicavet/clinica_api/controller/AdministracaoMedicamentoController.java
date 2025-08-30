@@ -2,7 +2,6 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoResponseDTO;
-import br.com.clinicavet.clinica_api.service.AdministracaoMedicamentoServiceImplement;
 import br.com.clinicavet.clinica_api.service.Interface.AdminstracaoMedicamentoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class AdministracaoMedicamentoController {
     private final AdminstracaoMedicamentoService administracaoMedicamentoService;
 
     @Autowired
-    public AdministracaoMedicamentoController(AdministracaoMedicamentoServiceImplement administracaoMedicamentoService) {
+    public AdministracaoMedicamentoController(AdminstracaoMedicamentoService administracaoMedicamentoService) {
         this.administracaoMedicamentoService = administracaoMedicamentoService;
     }
 

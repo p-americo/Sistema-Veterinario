@@ -7,9 +7,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class FuncionarioRequestDTO {
-
-    // --- Campos herdados de EPessoa ---
+public class FuncionarioUpdateDTO {
     @NotBlank(message = "O nome é obrigatório.")
     private String nome;
 
@@ -28,23 +26,13 @@ public class FuncionarioRequestDTO {
     @Email(message = "O formato do e-mail é inválido.")
     private String email;
 
-    // --- Campos específicos de EFuncionario ---
     @NotNull(message = "A data de admissão é obrigatória.")
     @PastOrPresent(message = "A data de admissão não pode ser futura.")
     private LocalDate dataAdmissao;
 
-    // O CRMV é opcional no DTO, a obrigatoriedade dele será validada no Service,
-    // dependendo do cargo escolhido.
-    @Pattern(
-        regexp = "^(\\d{4,6}[-/]?[A-Z]{2})?$",
-        message = "O CRMV deve seguir o padrão 12345-SP, 12345/SP ou 12345SP"
-    )
     private String crmv;
 
     @NotNull(message = "O ID do cargo é obrigatório.")
-    private Long cargoId; // << Recebemos o ID do cargo
-
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).*$",
-            message = "A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial.")
-    private String senha;
+    private Long cargoId;
 }
+

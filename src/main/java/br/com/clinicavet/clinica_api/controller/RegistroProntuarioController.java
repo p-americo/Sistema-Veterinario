@@ -2,7 +2,7 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioResponseDTO;
-import br.com.clinicavet.clinica_api.service.RegistroProntuarioServiceImplement;
+import br.com.clinicavet.clinica_api.service.Interface.RegistroProntuarioServiceInterface;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,10 +18,10 @@ import java.util.List;
 @RequestMapping("/api/registros-prontuario")
 public class RegistroProntuarioController {
 
-    private final RegistroProntuarioServiceImplement registroProntuarioService;
+    private final RegistroProntuarioServiceInterface registroProntuarioService;
 
     @Autowired
-    public RegistroProntuarioController(RegistroProntuarioServiceImplement registroProntuarioService) {
+    public RegistroProntuarioController(RegistroProntuarioServiceInterface registroProntuarioService) {
         this.registroProntuarioService = registroProntuarioService;
     }
 
