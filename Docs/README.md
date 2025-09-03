@@ -39,7 +39,7 @@ Para rodar o projeto completo, você precisará executar tanto o back-end quanto
 3.  A API utiliza um banco de dados H2 em memória por padrão para desenvolvimento, então nenhuma configuração adicional é necessária.
 4.  Execute a classe principal `ClinicaApiApplication.java`.
 5.  A API estará disponível em `http://localhost:8080`.
-
+6.  Crie um cliente ou Funcionario pelo Swagger e o use para fazer o login no front
 ### 3. Rodando o Frontend (Aplicação Web)
 
 1.  Abra a pasta `frontend/` no seu Visual Studio Code (ou outro editor de código).
