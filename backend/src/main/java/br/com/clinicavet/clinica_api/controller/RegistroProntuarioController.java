@@ -3,6 +3,7 @@ package br.com.clinicavet.clinica_api.controller;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioResponseDTO;
 import br.com.clinicavet.clinica_api.service.Interface.RegistroProntuarioServiceInterface;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +15,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Tag(name = "Registros de Prontuário", description = "Gerenciamento dos registros (evoluções) dentro de um prontuário")
 @RestController
 @RequestMapping("/api/registros-prontuario")
 public class RegistroProntuarioController {

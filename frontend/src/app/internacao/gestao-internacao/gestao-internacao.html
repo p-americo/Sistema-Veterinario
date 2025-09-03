@@ -1,0 +1,157 @@
+<div class="container">
+  <h1 class="title">Gestão de Internações</h1>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}<button class="close-btn" (click)="errorMessage = ''">×</button></div>
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}<button class="close-btn" (click)="successMessage = ''">×</button></div>
+
+  <div class="card">
+    <div class="card-header"><h2>Consultar Internação</h2></div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="animalBusca">Selecione um animal:</label>
+        <div style="display: flex; gap: 10px;">
+          <select id="animalBusca" [formControl]="animalSelectControl" class="form-control" style="flex-grow: 1;">
+            <option [ngValue]="null">Selecione...</option>
+            <option *ngFor="let animal of listaAnimais" [value]="animal.id">{{ animal.nome }} (Dono: {{ animal.cliente.nome }})</option>
+          </select>
+          <button class="btn btn-primary" (click)="buscarInternacao()" [disabled]="!animalSelectControl.value">Buscar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="statusBusca === 'buscando'" class="no-data">Buscando informações...</div>
+
+  <div *ngIf="statusBusca === 'nao_encontrado'" class="card">
+    <div class="card-header"><h2>Nova Internação</h2></div>
+    <div class="card-body">
+      <div class="alert alert-info" style="border-color: #3498db; background-color: #eaf5fb;">
+        O animal <strong>{{ animalSelecionado?.nome }}</strong> não possui internação ativa. Preencha os dados abaixo para iniciar uma.
+      </div>
+      <form [formGroup]="internacaoForm" (ngSubmit)="iniciarInternacao()">
+        <div class="form-group">
+          <label for="dataEntrada">Data e Hora de Entrada:</label>
+          <input type="datetime-local" id="dataEntrada" formControlName="dataEntrada" class="form-control">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="internacaoForm.invalid">Iniciar Internação</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="statusBusca === 'encontrado' && internacaoAtiva" class="card">
+    <div class="card-header">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2>Internação de: {{ internacaoAtiva.nomeAnimal }}</h2>
+          <strong style="color: #27ae60; background-color: white; padding: 2px 8px; border-radius: 4px; border: 1px solid #27ae60;">STATUS: ATIVA</strong>
+        </div>
+        <button class="btn btn-danger" (click)="darAlta()">Dar Alta</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <p><strong>Data de Entrada:</strong> {{ internacaoAtiva.dataEntrada | date:'dd/MM/yyyy HH:mm' }}</p>
+
+      <hr style="margin: 30px 0;">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3>Diárias</h3>
+        <button class="btn btn-info" (click)="openDiariaModal()">Adicionar Diária</button>
+      </div>
+      <div *ngIf="!internacaoAtiva.diarias || internacaoAtiva.diarias.length === 0" class="no-data">Nenhuma diária registrada.</div>
+
+      <div *ngFor="let diaria of internacaoAtiva.diarias" class="card" style="margin-top: 15px; border: 1px solid #eee;">
+        <div class="card-header" style="background-color: #f8f9fa; color: #333;">
+          <h4 style="margin:0;">Diária de {{ diaria.dataHora | date:'dd/MM/yyyy HH:mm' }}</h4>
+        </div>
+        <div class="card-body">
+          <p><strong>Peso:</strong> {{ diaria.pesoNoDia || 'N/A' }} kg</p>
+          <p><strong>Diagnóstico:</strong> {{ diaria.diagnostico || 'N/A' }}</p>
+          <p><strong>Observações:</strong> {{ diaria.observacoesClinicas || 'N/A' }}</p>
+
+          <hr>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h5>Medicamentos Administrados</h5>
+            <button class="btn btn-sm btn-primary" (click)="openMedicamentoModal(diaria)">Administrar Medicamento</button>
+          </div>
+          <ul *ngIf="diaria.medicamentos && diaria.medicamentos.length > 0">
+            <li *ngFor="let med of diaria.medicamentos">{{ med.nomeMedicamento }} ({{ med.dosagem }}) - {{ med.dataHora | date:'HH:mm' }} por {{ med.nomeFuncionarioExecutor }}</li>
+          </ul>
+          <p *ngIf="!diaria.medicamentos || diaria.medicamentos.length === 0" style="font-style: italic; color: #888;">Nenhum medicamento nesta diária.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showDiariaModal" class="modal-overlay" (click)="closeDiariaModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Adicionar Diária</h2>
+      <button class="modal-close-btn" (click)="closeDiariaModal()">×</button>
+    </div>
+    <form [formGroup]="diariaForm" (ngSubmit)="onDiariaSubmit()">
+      <div class="form-group">
+        <label for="dataHoraDiaria">Data e Hora:</label>
+        <input type="datetime-local" id="dataHoraDiaria" formControlName="dataHora" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="pesoNoDia">Peso (kg):</label>
+        <input type="number" id="pesoNoDia" formControlName="pesoNoDia" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="observacoesClinicas">Observações Clínicas:</label>
+        <textarea id="observacoesClinicas" formControlName="observacoesClinicas" class="form-control" rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="diagnostico">Diagnóstico:</label>
+        <textarea id="diagnostico" formControlName="diagnostico" class="form-control" rows="3"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="diariaForm.invalid">Salvar Diária</button>
+        <button type="button" class="btn btn-secondary" (click)="closeDiariaModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="showMedicamentoModal" class="modal-overlay" (click)="closeMedicamentoModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Administrar Medicamento</h2>
+      <button class="modal-close-btn" (click)="closeMedicamentoModal()">×</button>
+    </div>
+    <form [formGroup]="medicamentoForm" (ngSubmit)="onMedicamentoSubmit()">
+      <div class="form-group">
+        <label for="medicamentoId">Medicamento:</label>
+        <select id="medicamentoId" formControlName="medicamentoId" class="form-control">
+          <option [ngValue]="null" disabled>Selecione</option>
+          <option *ngFor="let med of listaMedicamentos" [value]="med.id">{{ med.nome }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="funcionarioExecutorId">Executado por:</label>
+        <select id="funcionarioExecutorId" formControlName="funcionarioExecutorId" class="form-control">
+          <option [ngValue]="null" disabled>Selecione</option>
+          <option *ngFor="let func of listaFuncionarios" [value]="func.id">{{ func.nome }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="dataHoraMed">Data e Hora:</label>
+        <input type="datetime-local" id="dataHoraMed" formControlName="dataHora" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="dosagem">Dosagem:</label>
+        <input type="text" id="dosagem" formControlName="dosagem" class="form-control" placeholder="Ex: 5ml, 1 comprimido">
+      </div>
+      <div class="form-group">
+        <label for="quantidadeAdministrada">Qtd. Retirada do Estoque:</label>
+        <input type="number" id="quantidadeAdministrada" formControlName="quantidadeAdministrada" class="form-control">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="medicamentoForm.invalid">Salvar Administração</button>
+        <button type="button" class="btn btn-secondary" (click)="closeMedicamentoModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>

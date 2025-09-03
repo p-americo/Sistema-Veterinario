@@ -1,0 +1,96 @@
+<div class="container">
+  <h1 class="title">Gestão de Medicamentos</h1>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}<button class="close-btn" (click)="errorMessage = ''">×</button></div>
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}<button class="close-btn" (click)="successMessage = ''">×</button></div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>{{ isEditing ? 'Editar Medicamento' : 'Cadastrar Novo Medicamento' }}</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="medicamentoForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="nome">Nome do Medicamento:</label>
+          <input type="text" id="nome" formControlName="nome" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="categoria">Categoria:</label>
+          <select id="categoria" formControlName="categoria" class="form-control">
+            <option [ngValue]="null" disabled>Selecione a categoria</option>
+            <option *ngFor="let cat of listaCategorias" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="principioAtivo">Princípio Ativo:</label>
+          <input type="text" id="principioAtivo" formControlName="principioAtivo" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="quantidadeEstoque">Quantidade em Estoque:</label>
+          <input type="number" id="quantidadeEstoque" formControlName="quantidadeEstoque" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="viaAdministracao">Via de Administração:</label>
+          <select id="viaAdministracao" formControlName="viaAdministracao" class="form-control">
+            <option [ngValue]="null" disabled>Selecione a via</option>
+            <option *ngFor="let via of listaVias" [value]="via">{{ via }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dosagemPadrao">Dosagem Padrão:</label>
+          <input type="text" id="dosagemPadrao" formControlName="dosagemPadrao" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="fabricante">Fabricante:</label>
+          <input type="text" id="fabricante" formControlName="fabricante" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Prescrição Obrigatória?</label>
+          <div>
+            <label><input type="radio" [value]="true" formControlName="prescricaoObrigatoria"> Sim</label>
+            <label style="margin-left: 15px;"><input type="radio" [value]="false" formControlName="prescricaoObrigatoria"> Não</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="descricao">Descrição / Observações:</label>
+          <textarea id="descricao" formControlName="descricao" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="medicamentoForm.invalid">{{ isEditing ? 'Atualizar' : 'Cadastrar' }}</button>
+          <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2>Lista de Medicamentos</h2></div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Estoque</th>
+          <th>Prescrição</th>
+          <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let med of medicamentos">
+          <td>{{ med.id }}</td>
+          <td>{{ med.nome }}</td>
+          <td>{{ med.categoria }}</td>
+          <td>{{ med.quantidadeEstoque }}</td>
+          <td>{{ med.prescricaoObrigatoria ? 'Sim' : 'Não' }}</td>
+          <td class="actions">
+            <button class="btn btn-sm btn-info" (click)="editMedicamento(med)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteMedicamento(med.id)">Excluir</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

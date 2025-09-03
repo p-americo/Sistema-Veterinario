@@ -3,6 +3,7 @@ package br.com.clinicavet.clinica_api.controller;
 import br.com.clinicavet.clinica_api.dto.InternacaoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.InternacaoResponseDTO;
 import br.com.clinicavet.clinica_api.service.Interface.InternacaoServiceInterface;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "Internações", description = "Gerenciamento do ciclo de internações dos animais")
 @RestController
 @RequestMapping("/api/internacoes")
 @CrossOrigin(origins = "http://localhost:4200") // Necessário para o Angular

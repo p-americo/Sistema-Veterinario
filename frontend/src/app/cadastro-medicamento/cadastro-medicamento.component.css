@@ -1,0 +1,60 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.btn-voltar {
+  align-self: flex-start; margin-bottom: 20px; background-color: #6c757d;
+  color: white; border: none; padding: 10px 20px; border-radius: 8px;
+  cursor: pointer; font-weight: 600; transition: background-color 0.2s;
+}
+.btn-voltar:hover { background-color: #5a6268; }
+.form-container {
+  display: flex; background-color: #fff; border: 1px solid #e0e0e0;
+  border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow: hidden; width: 100%; max-width: 1000px; margin: 0 auto;
+}
+.form-sidebar {
+  flex: 0 0 250px; background-color: #f8f9fa; padding: 2rem;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; border-right: 1px solid #e0e0e0;
+}
+.photo-placeholder {
+  width: 150px; height: 150px; border: 2px dashed #ccc; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; color: #ccc; margin-bottom: 2rem;
+}
+.form-sidebar h2 { font-size: 1.5rem; font-weight: 600; color: #333; line-height: 1.2; }
+.form-main { flex: 1; padding: 2rem 3rem; }
+.field-group {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.5rem; margin-bottom: 1.5rem;
+}
+.form-field { display: flex; flex-direction: column; }
+.form-field label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #555; }
+.form-field input, .form-field select, .form-field textarea {
+  width: 100%; padding: 0.75rem; border: 1px solid #ccc;
+  border-radius: 4px; font-size: 1rem; box-sizing: border-box;
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+  outline: none; border-color: #4a4a4a; box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.2);
+}
+.checkbox-field {
+  flex-direction: row; align-items: center; justify-content: flex-start;
+  padding-top: 2rem; gap: 0.75rem;
+}
+.checkbox-field input { width: auto; }
+.checkbox-field label { margin-bottom: 0; }
+.submit-button {
+  width: 100%; padding: 0.8rem; background-color: #343a40; color: white;
+  border: none; border-radius: 4px; font-size: 1.1rem; font-weight: 600;
+  cursor: pointer; transition: background-color 0.2s; margin-top: 1rem;
+}
+.submit-button:disabled { background-color: #6c757d; cursor: not-allowed; }
+.submit-button:not(:disabled):hover { background-color: #23272b; }
+.message {
+  padding: 1rem; margin-top: 1.5rem; border-radius: 4px;
+  text-align: center; font-weight: 500;
+}
+.success { background-color: #d4edda; color: #155724; }
+.error { background-color: #f8d7da; color: #721c24; }

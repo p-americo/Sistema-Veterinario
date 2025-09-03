@@ -3,6 +3,7 @@ package br.com.clinicavet.clinica_api.controller;
 import br.com.clinicavet.clinica_api.dto.CargoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.CargoResponseDTO;
 import br.com.clinicavet.clinica_api.service.CargoServiceImplement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "Cargos", description = "Gerenciamento de cargos dos funcionários")
 @RestController
 @RequestMapping("/api/cargos")
 public class CargoController {

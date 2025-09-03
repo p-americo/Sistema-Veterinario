@@ -1,5 +1,7 @@
 package br.com.clinicavet.clinica_api.service;
 
+import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoResponseDTO;
+import br.com.clinicavet.clinica_api.dto.DiariaResponseDTO;
 import br.com.clinicavet.clinica_api.dto.InternacaoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.InternacaoResponseDTO;
 import br.com.clinicavet.clinica_api.model.Animal;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime; // Importe para usar na alta
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -48,16 +51,23 @@ public class InternacaoServiceImplement implements InternacaoServiceInterface {
         response.setNomeAnimal(salva.getAnimal().getNome());
         response.setAnimalId(animal.getId());
 
-        return response;
+        return mapToResponseDTO(salva, false);
     }
 
 
     @Transactional(readOnly = true)
     public InternacaoResponseDTO buscarInternacaoAtivaPorAnimalId(Long animalId) {
-        Internacao internacao = repository.findByAnimalIdAndStatus(animalId, EnumInternacaoStatus.ATIVA)
-                .orElseThrow(() -> new NoSuchElementException("Nenhuma internação ativa encontrada para o animal ID: " + animalId));
 
-        return mapToResponseDTO(internacao);
+        List<Internacao> internacoes = repository.findByAnimalIdAndStatus(animalId, EnumInternacaoStatus.ATIVA);
+
+
+        if (internacoes.isEmpty()) {
+            throw new NoSuchElementException("Nenhuma internação ativa encontrada para o animal ID: " + animalId);
+        }
+
+        Internacao internacao = internacoes.get(0);
+
+        return mapToResponseDTO(internacao, true);
     }
 
     @Transactional
@@ -69,7 +79,7 @@ public class InternacaoServiceImplement implements InternacaoServiceInterface {
         internacao.setDataSaida(LocalDateTime.now());
 
         Internacao atualizada = repository.save(internacao);
-        return mapToResponseDTO(atualizada);
+        return mapToResponseDTO(atualizada, false);
     }
 
     @Override
@@ -86,7 +96,7 @@ public class InternacaoServiceImplement implements InternacaoServiceInterface {
         existente.setAnimal(animal);
 
         Internacao atualizada = repository.save(existente);
-        return mapToResponseDTO(atualizada);
+        return mapToResponseDTO(atualizada, true);
     }
 
     @Override
@@ -94,13 +104,13 @@ public class InternacaoServiceImplement implements InternacaoServiceInterface {
         Internacao internacao = repository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Internação não encontrada"));
 
-        return mapToResponseDTO(internacao);
+        return mapToResponseDTO(internacao, true);
     }
 
     @Override
     public List<InternacaoResponseDTO> listarTodas() {
         return repository.findAll().stream()
-                .map(this::mapToResponseDTO)
+                .map(internacao -> mapToResponseDTO(internacao, false))
                 .collect(Collectors.toList());
     }
 
@@ -112,11 +122,52 @@ public class InternacaoServiceImplement implements InternacaoServiceInterface {
         repository.deleteById(id);
     }
 
-    private InternacaoResponseDTO mapToResponseDTO(Internacao internacao) {
+    private InternacaoResponseDTO mapToResponseDTO(Internacao internacao, boolean incluirDiarias) {
         InternacaoResponseDTO dto = mapper.map(internacao, InternacaoResponseDTO.class);
         if (internacao.getAnimal() != null) {
             dto.setAnimalId(internacao.getAnimal().getId());
             dto.setNomeAnimal(internacao.getAnimal().getNome());
+        }
+
+        if (incluirDiarias && internacao.getDiarias() != null) {
+            List<DiariaResponseDTO> diariasDTO = internacao.getDiarias().stream()
+                    .map(diaria -> {
+                        DiariaResponseDTO diariaDTO = mapper.map(diaria, DiariaResponseDTO.class);
+                        if (diaria.getMedicamentos() != null) {
+                            List<AdministracaoMedicamentoResponseDTO> medicamentosDTO = diaria.getMedicamentos().stream()
+                                    .map(medicamentoAdmin -> {
+                                        AdministracaoMedicamentoResponseDTO medDTO = new AdministracaoMedicamentoResponseDTO();
+                                        medDTO.setId(medicamentoAdmin.getId());
+                                        medDTO.setDosagem(medicamentoAdmin.getDosagem());
+                                        medDTO.setDataHora(medicamentoAdmin.getDataHora());
+                                        medDTO.setQuantidadeAdministrada(medicamentoAdmin.getQuantidadeAdministrada());
+
+                                        if (medicamentoAdmin.getMedicamento() != null) {
+                                            medDTO.setMedicamentoId(medicamentoAdmin.getMedicamento().getId());
+
+                                            if (medicamentoAdmin.getMedicamento().getProduto() != null) {
+                                                medDTO.setNomeMedicamento(medicamentoAdmin.getMedicamento().getProduto().getNome());
+                                            }
+                                        }
+                                        if (medicamentoAdmin.getFuncionarioExecutor() != null) {
+                                            medDTO.setFuncionarioExecutorId(medicamentoAdmin.getFuncionarioExecutor().getId());
+                                            medDTO.setNomeFuncionarioExecutor(medicamentoAdmin.getFuncionarioExecutor().getNome());
+                                        }
+                                        medDTO.setEntradaProntuarioId(diaria.getId());
+
+                                        return medDTO;
+                                    })
+                                    .collect(Collectors.toList());
+                            diariaDTO.setMedicamentos(medicamentosDTO);
+                        } else {
+                            diariaDTO.setMedicamentos(Collections.emptyList());
+                        }
+                        return diariaDTO;
+                    })
+                    .collect(Collectors.toList());
+            dto.setDiarias(diariasDTO);
+        } else {
+            dto.setDiarias(Collections.emptyList());
         }
         return dto;
     }

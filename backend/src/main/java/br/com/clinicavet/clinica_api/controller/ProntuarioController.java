@@ -3,6 +3,7 @@ package br.com.clinicavet.clinica_api.controller;
 import br.com.clinicavet.clinica_api.dto.ProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ProntuarioResponseDTO;
 import br.com.clinicavet.clinica_api.service.Interface.ProntuarioServiceInterface;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "Prontuários", description = "Gerenciamento dos prontuários dos animais")
 @RestController
 @RequestMapping("/api/prontuarios")
 public class ProntuarioController {

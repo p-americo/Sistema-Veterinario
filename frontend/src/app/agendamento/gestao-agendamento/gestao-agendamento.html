@@ -1,0 +1,97 @@
+<div class="container">
+  <h1 class="title">Gestão de Agendamentos</h1>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}<button class="close-btn" (click)="errorMessage = ''">×</button></div>
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}<button class="close-btn" (click)="successMessage = ''">×</button></div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>{{ isEditing ? 'Editar Agendamento' : 'Novo Agendamento' }}</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="agendamentoForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="clienteId">Cliente:</label>
+          <select id="clienteId" formControlName="clienteId" class="form-control">
+            <option [ngValue]="null" disabled>Selecione um cliente</option>
+            <option *ngFor="let cliente of listaClientes" [value]="cliente.id">{{ cliente.nome }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="animalId">Animal:</label>
+          <select id="animalId" formControlName="animalId" class="form-control" [disabled]="!agendamentoForm.get('clienteId')?.value">
+            <option [ngValue]="null" disabled>Selecione um animal</option>
+            <option *ngFor="let animal of listaAnimaisFiltrada" [value]="animal.id">{{ animal.nome }} ({{ animal.especie }})</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="servicoId">Serviço:</label>
+          <select id="servicoId" formControlName="servicoId" class="form-control">
+            <option [ngValue]="null" disabled>Selecione um serviço</option>
+            <option *ngFor="let servico of listaServicos" [value]="servico.id">{{ servico.tipo }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dataHoraAgendamento">Data e Hora:</label>
+          <input type="datetime-local" id="dataHoraAgendamento" formControlName="dataHoraAgendamento" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status:</label>
+          <select id="status" formControlName="status" class="form-control">
+            <option *ngFor="let status of listaStatus" [value]="status">{{ status }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="observacoes">Observações:</label>
+          <textarea id="observacoes" formControlName="observacoes" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="agendamentoForm.invalid">{{ isEditing ? 'Atualizar' : 'Agendar' }}</button>
+          <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Próximos Agendamentos</h2>
+    </div>
+    <div class="card-body">
+      <div *ngIf="agendamentos.length === 0" class="no-data">
+        Nenhum agendamento encontrado.
+      </div>
+      <table *ngIf="agendamentos.length > 0" class="table">
+        <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>Cliente</th>
+          <th>Animal</th>
+          <th>Serviço</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let agendamento of agendamentos">
+          <td>{{ agendamento.dataHoraAgendamento | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ agendamento.cliente.nome }}</td>
+          <td>{{ agendamento.animal.nome }}</td>
+          <td>{{ agendamento.servico.tipo }}</td>
+          <td>{{ agendamento.status }}</td>
+          <td class="actions">
+            <button class="btn btn-sm btn-info" (click)="editAgendamento(agendamento)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteAgendamento(agendamento.id)">Excluir</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

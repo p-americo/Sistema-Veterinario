@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "internacao")
@@ -30,4 +32,7 @@ public class Internacao {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EnumInternacaoStatus status;
+    @OneToMany(mappedBy = "internacao", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<DiariaInternacao> diarias = new HashSet<>();
+
 }

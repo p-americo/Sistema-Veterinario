@@ -1,0 +1,44 @@
+<button class="btn-voltar" (click)="voltar.emit()">
+  &#8592; Voltar
+</button>
+
+<div class="form-container">
+  <aside class="form-sidebar">
+    <div class="photo-placeholder">
+      <span>+</span>
+    </div>
+    <h2>Cadastrar<br>novo serviço</h2>
+  </aside>
+
+  <main class="form-main">
+    <form #servicoForm="ngForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label for="tipo">Tipo de Serviço</label>
+        <select id="tipo" name="tipo" [(ngModel)]="novoServico.tipo" required>
+          <option value="" disabled>Selecione o tipo</option>
+          <option *ngFor="let tipo of tiposDeServico" [value]="tipo">{{ tipo }}</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="veterinario">Veterinário Responsável</label>
+        <select id="veterinario" name="veterinarioId" [(ngModel)]="novoServico.veterinarioId" required>
+          <option value="0" disabled>Selecione o veterinário</option>
+          <option *ngFor="let vet of veterinarios" [value]="vet.id">{{ vet.nome }}</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="valor">Valor (R$)</label>
+        <input id="valor" type="number" name="valor" [(ngModel)]="novoServico.valor" placeholder="Ex: 150.00" required>
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="!servicoForm.form.valid || isLoading">
+        {{ isLoading ? 'Cadastrando...' : 'Cadastrar' }}
+      </button>
+
+      <div *ngIf="successMessage" class="message success">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="message error">{{ errorMessage }}</div>
+    </form>
+  </main>
+</div>

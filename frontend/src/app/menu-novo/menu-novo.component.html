@@ -1,0 +1,135 @@
+<div class="menu-container">
+  <header class="main-header">
+    <div class="logo-container">
+      <img class="logo-image" src="assets/images/logo.png" alt="VetManager Logo">
+    </div>
+
+    <nav class="main-nav">
+      <button
+        class="nav-button"
+        [class.active]="abaAtiva === 'menu'"
+        (click)="selecionarAba('menu')">
+        Menu
+      </button>
+      <button
+        class="nav-button"
+        [class.active]="abaAtiva === 'agendamentos'"
+        (click)="selecionarAba('agendamentos')">
+        Agendamentos
+      </button>
+    </nav>
+    <div class="logout-container">
+      <button class="logout-button">→</button>
+    </div>
+  </header>
+
+  <main class="main-content" *ngIf="abaAtiva === 'agendamentos'">
+    <aside class="pet-profile" *ngIf="!exibirFormularioAgendamento && !exibirFormularioCadastroPet">
+      <div class="cliente-selector-side">
+        <label for="cliente-select-side">Cliente Ativo</label>
+        <select id="cliente-select-side" [(ngModel)]="clienteIdSelecionado" (ngModelChange)="onClienteChange($event)">
+          <option [ngValue]="null">Selecione um cliente</option>
+          <option *ngFor="let cliente of clientes" [value]="cliente.id">{{ cliente.nome }}</option>
+        </select>
+      </div>
+      <div class="pet-card">
+        <div class="pet-image-placeholder">
+          <img *ngIf="imagemPetUrl" [src]="imagemPetUrl" alt="Foto de {{ petExibido?.nome }}">
+          <span *ngIf="!imagemPetUrl">🐾</span>
+        </div>
+        <h3 *ngIf="petExibido; else nomePadraoPet">{{ petExibido?.nome }}</h3>
+        <ng-template #nomePadraoPet><h3>{{ clienteIdSelecionado ? 'Nenhum pet selecionado' : 'Seu pet' }}</h3></ng-template>
+        <div *ngIf="petExibido; else infoPadraoPet">
+          <p><b>Espécie/Raça:</b> {{ petExibido?.especie }} / {{ petExibido?.raca }}</p>
+          <p><b>Sexo:</b> {{ petExibido?.sexo }}</p>
+        </div>
+        <ng-template #infoPadraoPet>
+          <p>Espécie/Raça: -</p>
+          <p>Sexo: -</p>
+        </ng-template>
+        <button class="btn-register-pet" (click)="abrirFormularioCadastro()" [disabled]="!clienteIdSelecionado">Cadastrar pet</button>
+      </div>
+    </aside>
+
+    <ng-container *ngIf="!exibirFormularioAgendamento; else agendamentoForm">
+      <section class="dashboard" *ngIf="!exibirFormularioCadastroPet">
+        <div *ngIf="agendamentoExibido; else semAgendamento" class="card-row">
+          <div class="card large-card agendamento-card">
+            <div class="agendamento-details">
+              <div class="card-icon">📅</div>
+              <div class="agendamento-info">
+                <h4>Próximos Agendamentos</h4>
+                <p><b>Data/Hora:</b> {{ agendamentoExibido?.dataHoraAgendamento | date:'dd/MM/yyyy – HH:mm' }}</p>
+                <p><b>Pet:</b> {{ agendamentoExibido?.animal?.nome }} ({{ agendamentoExibido?.animal?.especie }})</p>
+                <p><b>Tipo de consulta:</b> {{ agendamentoExibido?.servico?.tipo }}</p>
+                <p><b>Status:</b> {{ agendamentoExibido?.status }}</p>
+              </div>
+            </div>
+            <div class="agendamento-nav" *ngIf="agendamentosFuturos.length > 1">
+              <button class="nav-arrow" (click)="navegarAgendamentos(-1)">‹</button>
+              <button class="nav-arrow" (click)="navegarAgendamentos(1)">›</button>
+            </div>
+          </div>
+        </div>
+        <ng-template #semAgendamento>
+          <div class="card-row">
+            <div class="card large-card">
+              <div class="card-icon">📅</div>
+              <div class="card-content">
+                <h4 *ngIf="isLoading">Buscando...</h4>
+                <h4 *ngIf="!isLoading && clienteIdSelecionado">Não possui agendamento futuro</h4>
+                <h4 *ngIf="!isLoading && !clienteIdSelecionado">Selecione um cliente</h4>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <div class="card-row">
+          <div class="card stats-card"> <div class="card-icon-small">🕒</div> <h4>Status Consulta</h4> <p class="status-percentage">75%</p> <p>Em andamento</p> </div>
+          <div class="card notification-card">
+            <div class="card-icon-small">❗</div>
+            <h4>Notificações</h4>
+
+            <div *ngIf="internacaoAtiva; else semNotificacoes" class="notification-alert">
+              <p>• 🏥 **ANIMAL INTERNADO!**</p>
+              <p>Entrada em {{ internacaoAtiva.dataEntrada | date:'dd/MM/yyyy' }}. Status: <b>{{ internacaoAtiva.status }}</b></p>
+            </div>
+
+            <ng-template #semNotificacoes>
+              <p>• Sem notificações importantes.</p>
+            </ng-template>
+
+          </div>
+        </div>
+        <div class="novo-agendamento-container">
+          <button class="btn-new-appointment-main" (click)="abrirFormularioAgendamento()" [disabled]="!clienteIdSelecionado">Novo Agendamento</button>
+        </div>
+      </section>
+      <div class="form-wrapper" *ngIf="exibirFormularioCadastroPet">
+        <app-animal-novo *ngIf="clienteIdSelecionado" [clienteId]="clienteIdSelecionado" (petCadastrado)="onPetCadastrado()"></app-animal-novo>
+      </div>
+    </ng-container>
+    <ng-template #agendamentoForm>
+      <div class="form-wrapper">
+        <app-agendamento-novo
+          *ngIf="clienteIdSelecionado"
+          [clienteId]="clienteIdSelecionado"
+          [petsDoCliente]="petsDoClienteParaFormulario"
+          (agendamentoConcluido)="onAgendamentoConcluido()"
+          (formularioFechado)="onFormularioAgendamentoFechado()">
+        </app-agendamento-novo>
+      </div>
+    </ng-template>
+  </main>
+
+  <main class="main-content" *ngIf="abaAtiva === 'menu'">
+    <div class="menu-hero-container">
+      <h1 class="hero-title">Sua referência em saúde e bem-estar animal.</h1>
+      <p class="hero-subtitle">Gerenciamento digital para um cuidado completo e ágil.</p>
+      <div class="gallery-container">
+        <div class="gallery-item"><img src="assets/images/gato-vacina.png" alt="Gato recebendo vacina de um veterinário"></div>
+        <div class="gallery-item"><img src="assets/images/cachorro-esteto.png" alt="Cachorro pequeno com um estetoscópio no pescoço"></div>
+        <div class="gallery-item"><img src="assets/images/calopsita.png" alt="Calopsita amarela e cinza em um poleiro"></div>
+      </div>
+    </div>
+  </main>
+</div>

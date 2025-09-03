@@ -1,0 +1,83 @@
+<button class="btn-voltar" (click)="voltar.emit()">
+  &#8592; Voltar
+</button>
+
+<div class="form-container">
+  <aside class="form-sidebar">
+    <div class="photo-placeholder">
+      <span>+</span>
+    </div>
+    <h2>Cadastrar<br>novo medicamento</h2>
+  </aside>
+
+  <main class="form-main">
+    <form #medicamentoForm="ngForm" (ngSubmit)="onSubmit()">
+      <!-- Linha 1 -->
+      <div class="field-group">
+        <div class="form-field">
+          <label for="nome">Nome do Medicamento</label>
+          <input id="nome" type="text" name="nome" [(ngModel)]="novoMedicamento.nome" required>
+        </div>
+        <div class="form-field">
+          <label for="principioAtivo">Princípio Ativo (Opcional)</label>
+          <input id="principioAtivo" type="text" name="principioAtivo" [(ngModel)]="novoMedicamento.principioAtivo">
+        </div>
+      </div>
+
+
+      <div class="field-group">
+        <div class="form-field">
+          <label for="categoria">Categoria</label>
+          <select id="categoria" name="categoria" [(ngModel)]="novoMedicamento.categoria" required>
+            <option value="" disabled>Selecione</option>
+            <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="quantidadeEstoque">Quantidade em Estoque</label>
+          <input id="quantidadeEstoque" type="number" name="quantidadeEstoque" [(ngModel)]="novoMedicamento.quantidadeEstoque" required>
+        </div>
+      </div>
+
+
+      <div class="field-group">
+        <div class="form-field">
+          <label for="viaAdministracao">Via de Administração (Opcional)</label>
+          <select id="viaAdministracao" name="viaAdministracao" [(ngModel)]="novoMedicamento.viaAdministracao">
+            <option value="">Nenhuma</option>
+            <option *ngFor="let via of viasDeAdministracao" [value]="via">{{ via }}</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="dosagemPadrao">Dosagem Padrão (Opcional)</label>
+          <input id="dosagemPadrao" type="text" name="dosagemPadrao" [(ngModel)]="novoMedicamento.dosagemPadrao" placeholder="Ex: 5mg/kg">
+        </div>
+      </div>
+
+
+      <div class="form-field">
+        <label for="descricao">Descrição (Opcional)</label>
+        <textarea id="descricao" name="descricao" [(ngModel)]="novoMedicamento.descricao" rows="2"></textarea>
+      </div>
+
+
+      <div class="field-group">
+        <div class="form-field">
+          <label for="fabricante">Fabricante (Opcional)</label>
+          <input id="fabricante" type="text" name="fabricante" [(ngModel)]="novoMedicamento.fabricante">
+        </div>
+        <div class="form-field checkbox-field">
+          <input id="prescricaoObrigatoria" type="checkbox" name="prescricaoObrigatoria" [(ngModel)]="novoMedicamento.prescricaoObrigatoria">
+          <label for="prescricaoObrigatoria">Prescrição Obrigatória?</label>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="!medicamentoForm.form.valid || isLoading">
+        {{ isLoading ? 'Cadastrando...' : 'Cadastrar' }}
+      </button>
+
+      <div *ngIf="successMessage" class="message success">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="message error">{{ errorMessage }}</div>
+    </form>
+  </main>
+</div>

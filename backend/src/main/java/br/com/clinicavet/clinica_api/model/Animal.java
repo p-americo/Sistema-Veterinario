@@ -66,4 +66,7 @@ public class Animal {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
+    @Column(columnDefinition = "bytea")
+    private byte[] imagem;
+
 }

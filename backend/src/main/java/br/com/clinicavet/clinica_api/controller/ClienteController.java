@@ -4,6 +4,7 @@ import br.com.clinicavet.clinica_api.dto.ClienteUpdateDTO;
 import br.com.clinicavet.clinica_api.dto.ClienteRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ClienteResponseDTO;
 import br.com.clinicavet.clinica_api.service.Interface.ClienteService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +13,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "Clientes", description = "Gerenciamento de clientes da clínica")
 @RestController
 @RequestMapping("/api/clientes")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ClienteController {
 
     private final ClienteService clienteService;

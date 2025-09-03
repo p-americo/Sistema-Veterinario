@@ -3,6 +3,7 @@ package br.com.clinicavet.clinica_api.controller;
 import br.com.clinicavet.clinica_api.dto.DiariaRequestDTO;
 import br.com.clinicavet.clinica_api.dto.DiariaResponseDTO;
 import br.com.clinicavet.clinica_api.service.Interface.DiariaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "Diárias de Internação", description = "Gerenciamento das diárias associadas às internações")
 @RestController
 @RequestMapping("/api/diarias-internacao")
 public class DiariaController {

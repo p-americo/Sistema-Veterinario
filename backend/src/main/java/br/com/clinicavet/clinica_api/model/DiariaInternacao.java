@@ -19,7 +19,6 @@ public class DiariaInternacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // CORREÇÃO: Alterado para LocalDateTime para corresponder ao tipo TIMESTAMP do banco
     @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora;
 

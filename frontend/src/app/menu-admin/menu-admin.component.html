@@ -1,0 +1,172 @@
+<div class="admin-container">
+  <header class="main-header">
+    <div class="logo-container"> <img class="logo-image" src="assets/images/logo.png" alt="VetManager Logo"> </div>
+    <nav class="main-nav">
+      <button class="nav-button" [class.active]="abaAtiva === 'prontuario'" (click)="selecionarAba('prontuario')"> Prontuário </button>
+      <button class="nav-button" [class.active]="abaAtiva === 'cadastros'" (click)="selecionarAba('cadastros')"> Cadastros </button>
+    </nav>
+  </header>
+
+  <main class="main-content" *ngIf="abaAtiva === 'prontuario'">
+    <aside class="left-sidebar">
+      <div class="card prontuario-card">
+
+        <div class="animal-image-container" *ngIf="animalSelecionadoId">
+          <img *ngIf="imagemAnimalUrl" [src]="imagemAnimalUrl" alt="Foto de {{ nomeAnimalSelecionado }}">
+          <div *ngIf="!imagemAnimalUrl" class="image-placeholder">
+            <span>🐾</span>
+          </div>
+        </div>
+        <div class="animal-selector">
+          <label for="animal-select">Selecione o Paciente</label>
+          <select id="animal-select" [(ngModel)]="animalSelecionadoId" (ngModelChange)="onAnimalChange()">
+            <option [ngValue]="null">-- Escolha um animal --</option>
+            <option *ngFor="let animal of animais" [value]="animal.id">
+              {{ animal.nome }} - ({{ animal.especie }})
+            </option>
+          </select>
+        </div>
+        <div *ngIf="isLoading" style="text-align: center; margin: 20px 0;">Carregando dados... 🩺</div>
+        <div *ngIf="error && !isLoading" class="error-message">{{ error }}</div>
+        <ng-container *ngIf="prontuarioSelecionado && !isLoading">
+          <h3>Prontuário de {{ prontuarioSelecionado.nomeAnimal }}</h3>
+          <label>Alergias conhecidas</label>
+          <div class="info-box-dynamic">{{ prontuarioSelecionado.alergiasConhecidas || 'Nenhuma informação' }}</div>
+          <label>Condições pré-existentes</label>
+          <div class="info-box-dynamic">{{ prontuarioSelecionado.condicoesPreexistentes || 'Nenhuma informação' }}</div>
+        </ng-container>
+        <button *ngIf="animalSelecionadoId && !prontuarioSelecionado && !isLoading" class="btn-novo-prontuario" (click)="iniciarNovoProntuario()">
+          Criar Novo Prontuário
+        </button>
+      </div>
+    </aside>
+
+    <section class="right-dashboard">
+      <div class="card internacao-card">
+        <h4>Internação</h4>
+        <div *ngIf="isLoadingInternacao">Verificando status de internação...</div>
+        <div *ngIf="!isLoadingInternacao">
+          <div *ngIf="internacaoAtiva; else animalNaoInternado">
+            <div class="internacao-content">
+              <div class="internacao-bloco">
+                <h5>Ficha</h5>
+                <ul>
+                  <li><strong>Entrada:</strong> {{ internacaoAtiva.dataEntrada | date:'dd/MM/yyyy HH:mm' }}</li>
+                  <li><strong>Status:</strong> <span class="status-internado">{{ internacaoAtiva.status }}</span></li>
+                </ul>
+              </div>
+              <div class="internacao-bloco">
+                <h5>Última Diária</h5>
+                <ul *ngIf="ultimaDiaria; else semDiaria">
+                  <li *ngIf="ultimaDiaria.pesoNoDia"><strong>Peso:</strong> {{ ultimaDiaria.pesoNoDia }} kg</li>
+                  <li *ngIf="ultimaDiaria.observacoesClinicas"><strong>Obs:</strong> {{ ultimaDiaria.observacoesClinicas }}</li>
+                  <li *ngIf="ultimaDiaria.diagnostico"><strong>Diag:</strong> {{ ultimaDiaria.diagnostico }}</li>
+                </ul>
+                <ng-template #semDiaria><ul><li>Nenhuma diária registrada.</li></ul></ng-template>
+              </div>
+              <div class="internacao-bloco">
+                <h5>Medicação (ú. diária)</h5>
+                <ul *ngIf="ultimaDiaria?.medicamentos?.length; else semMedicacao">
+                  <li *ngFor="let med of ultimaDiaria?.medicamentos">{{ med.nomeMedicamento }} - {{ med.dosagem }}</li>
+                </ul>
+                <ng-template #semMedicacao><ul><li>Nenhum medicamento.</li></ul></ng-template>
+              </div>
+            </div>
+            <div class="internacao-actions">
+              <button class="btn-dar-alta">Dar Alta</button>
+              <button class="btn-nova-diaria" (click)="iniciarNovaDiaria()">Nova Diária</button>
+              <button class="btn-add-medicamento" (click)="iniciarAdicionarMedicamento()" [disabled]="!ultimaDiaria">Adic. Medicamento</button>
+            </div>
+          </div>
+          <ng-template #animalNaoInternado>
+            <div class="sem-internacao" *ngIf="animalSelecionadoId">
+              <div *ngIf="!confirmandoInicioInternacao">
+                <p>Este animal não está internado no momento.</p>
+                <button class="btn-iniciar-internacao" (click)="solicitarConfirmacaoInternacao()" [disabled]="isSaving">Iniciar Internação</button>
+              </div>
+              <div *ngIf="confirmandoInicioInternacao" class="confirmacao-box">
+                <p>Deseja realmente iniciar a internação?</p>
+                <div class="confirmacao-actions">
+                  <button class="btn-cancelar-small" (click)="cancelarConfirmacaoInternacao()">Não</button>
+                  <button class="btn-confirmar-small" (click)="executarInicioInternacao()" [disabled]="isSaving">{{ isSaving ? 'Iniciando...' : 'Sim' }}</button>
+                </div>
+              </div>
+            </div>
+            <div class="sem-internacao" *ngIf="!animalSelecionadoId"><p>Selecione um animal para ver o status da internação.</p></div>
+          </ng-template>
+        </div>
+      </div>
+
+      <ng-container *ngIf="!exibindoFormularioNovoProntuario && !exibindoFormularioNovoRegistro && !exibindoFormularioNovaDiaria && !exibindoFormularioAddMedicamento; else formularios">
+        <div class="card-row" *ngIf="prontuarioSelecionado">
+          <div class="card historico-card">
+            <h4>Histórico de registros</h4>
+            <div class="registros-timeline">
+              <div *ngIf="!prontuarioSelecionado.registros?.length" class="registro-item"><p>Nenhum registro encontrado para este animal.</p></div>
+              <div *ngFor="let registro of prontuarioSelecionado.registros" class="registro-item">
+                <div class="registro-header">
+                  <strong>{{ registro.dataHora | date:'dd/MM/yyyy HH:mm' }}</strong>
+                  <span>Dr(a). {{ registro.nomeVeterinario }}</span>
+                </div>
+                <div class="registro-body">
+                  <p *ngIf="registro.diagnostico"><strong>Diagnóstico:</strong> {{ registro.diagnostico }}</p>
+                  <p *ngIf="registro.observacoesClinicas"><strong>Observações:</strong> {{ registro.observacoesClinicas }}</p>
+                  <p *ngIf="registro.pesoNoDia"><strong>Peso:</strong> {{ registro.pesoNoDia }} kg</p>
+                </div>
+              </div>
+            </div>
+            <button class="btn-novo-registro" (click)="iniciarNovoRegistro()">Novo Registro</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #formularios>
+        <div *ngIf="exibindoFormularioNovoProntuario" class="card form-container">
+          <h4>Novo Prontuário para {{ nomeAnimalSelecionado }}</h4>
+          <p>Preencha os dados iniciais do prontuário. O histórico de registros poderá ser adicionado depois.</p>
+          <div class="form-group"><label for="alergias">Alergias conhecidas</label><textarea id="alergias" rows="4" [(ngModel)]="novoProntuarioRequest.alergiasConhecidas" placeholder="Ex: Poeira, grama..."></textarea></div>
+          <div class="form-group"><label for="condicoes">Condições pré-existentes</label><textarea id="condicoes" rows="4" [(ngModel)]="novoProntuarioRequest.condicoesPreexistentes" placeholder="Ex: Sopro cardíaco..."></textarea></div>
+          <div class="form-actions"><button class="btn-cancelar" type="button" (click)="cancelarNovoProntuario()">Cancelar</button><button class="btn-salvar" type="button" (click)="salvarNovoProntuario()" [disabled]="isSaving">{{ isSaving ? 'Salvando...' : 'Salvar Prontuário' }}</button></div>
+        </div>
+        <div *ngIf="exibindoFormularioNovoRegistro" class="card form-container">
+          <h4>Novo Registro para {{ prontuarioSelecionado?.nomeAnimal }}</h4>
+          <p>Adicione as informações do atendimento clínico atual.</p>
+          <div class="form-group"><label for="veterinario">Veterinário Responsável</label><select id="veterinario" [(ngModel)]="novoRegistroRequest.veterinarioResponsavelId" required><option [value]="0" disabled>-- Selecione um veterinário --</option><option *ngFor="let vet of veterinarios" [value]="vet.id">{{ vet.nome }}</option></select></div>
+          <div class="form-group"><label for="peso">Peso no Dia (kg)</label><input type="number" id="peso" [(ngModel)]="novoRegistroRequest.pesoNoDia" placeholder="Ex: 12.5"></div>
+          <div class="form-group"><label for="observacoes">Observações Clínicas</label><textarea id="observacoes" rows="4" [(ngModel)]="novoRegistroRequest.observacoesClinicas" placeholder="Descreva os sintomas..."></textarea></div>
+          <div class="form-group"><label for="diagnostico">Diagnóstico</label><textarea id="diagnostico" rows="3" [(ngModel)]="novoRegistroRequest.diagnostico" placeholder="Diagnóstico preliminar ou final..."></textarea></div>
+          <div class="form-actions"><button class="btn-cancelar" type="button" (click)="cancelarNovoRegistro()">Cancelar</button><button class="btn-salvar" type="button" (click)="salvarNovoRegistro()" [disabled]="isSaving">{{ isSaving ? 'Salvando...' : 'Salvar Registro' }}</button></div>
+        </div>
+        <div *ngIf="exibindoFormularioNovaDiaria" class="card form-container">
+          <h4>Nova Diária para {{ internacaoAtiva?.nomeAnimal }}</h4>
+          <p>Adicione as informações da diária de internação.</p>
+          <div class="form-group"><label for="pesoDiaria">Peso no Dia (kg)</label><input type="number" id="pesoDiaria" [(ngModel)]="novaDiariaRequest.pesoNoDia" placeholder="Ex: 12.5"></div>
+          <div class="form-group"><label for="observacoesDiaria">Observações Clínicas</label><textarea id="observacoesDiaria" rows="4" [(ngModel)]="novaDiariaRequest.observacoesClinicas" placeholder="Descreva os sintomas, estado geral..."></textarea></div>
+          <div class="form-group"><label for="diagnosticoDiaria">Diagnóstico Atualizado</label><textarea id="diagnosticoDiaria" rows="3" [(ngModel)]="novaDiariaRequest.diagnostico" placeholder="Atualização do diagnóstico..."></textarea></div>
+          <div class="form-actions"><button class="btn-cancelar" type="button" (click)="cancelarNovaDiaria()">Cancelar</button><button class="btn-salvar" type="button" (click)="salvarNovaDiaria()" [disabled]="isSaving">{{ isSaving ? 'Salvando...' : 'Salvar Diária' }}</button></div>
+        </div>
+        <div *ngIf="exibindoFormularioAddMedicamento" class="card form-container">
+          <h4>Administrar Medicamento na Diária de {{ ultimaDiaria?.dataHora | date:'dd/MM HH:mm' }}</h4>
+          <p>Selecione o medicamento, a dosagem e o responsável pela aplicação.</p>
+          <div class="form-group"><label for="medicamento">Medicamento</label><select id="medicamento" [(ngModel)]="novoMedicamentoRequest.medicamentoId" required><option [value]="0" disabled>-- Selecione um medicamento --</option><option *ngFor="let med of medicamentos" [value]="med.id">{{ med.nome }}</option></select></div>
+          <div class="form-group"><label for="dosagem">Dosagem</label><input type="text" id="dosagem" [(ngModel)]="novoMedicamentoRequest.dosagem" placeholder="Ex: 1 comprimido, 5 ml, 1 gota por kg"></div>
+          <div class="form-group"><label for="quantidade">Quantidade Administrada</label><input type="number" id="quantidade" [(ngModel)]="novoMedicamentoRequest.quantidadeAdministrada"></div>
+          <div class="form-group"><label for="executor">Executor</label><select id="executor" [(ngModel)]="novoMedicamentoRequest.funcionarioExecutorId" required><option [value]="0" disabled>-- Selecione o funcionário --</option><option *ngFor="let func of funcionarios" [value]="func.id">{{ func.nome }}</option></select></div>
+          <div class="form-actions"><button class="btn-cancelar" type="button" (click)="cancelarAdicionarMedicamento()">Cancelar</button><button class="btn-salvar" type="button" (click)="salvarAdicionarMedicamento()" [disabled]="isSaving">{{ isSaving ? 'Salvando...' : 'Salvar Administração' }}</button></div>
+        </div>
+      </ng-template>
+    </section>
+  </main>
+  <main class="main-content" *ngIf="abaAtiva === 'cadastros'">
+    <ng-container [ngSwitch]="telaCadastroAtiva">
+      <app-cadastro-funcionario *ngSwitchCase="'funcionario'" (voltar)="voltarParaSelecaoDeCadastro()"></app-cadastro-funcionario>
+      <app-cadastro-servico *ngSwitchCase="'servico'" (voltar)="voltarParaSelecaoDeCadastro()"></app-cadastro-servico>
+      <app-cadastro-medicamento *ngSwitchCase="'medicamento'" (voltar)="voltarParaSelecaoDeCadastro()"></app-cadastro-medicamento>
+      <div *ngSwitchDefault class="cadastros-container">
+        <div class="cadastro-bloco" (click)="mostrarCadastroFuncionario()"> <h4>Cadastro Funcionário</h4> <p>Clique para gerenciar os funcionários da clínica.</p> </div>
+        <div class="cadastro-bloco" (click)="mostrarCadastroServico()"> <h4>Cadastro Serviço</h4> <p>Clique para gerenciar os serviços oferecidos.</p> </div>
+        <div class="cadastro-bloco" (click)="mostrarCadastroMedicamento()"> <h4>Cadastro Medicamento</h4> <p>Clique para gerenciar o estoque de medicamentos.</p> </div>
+      </div>
+    </ng-container>
+  </main>
+</div>

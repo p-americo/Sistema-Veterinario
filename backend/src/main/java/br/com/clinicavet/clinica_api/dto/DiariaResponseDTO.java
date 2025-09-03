@@ -21,6 +21,6 @@ public class DiariaResponseDTO {
 
     private String diagnostico;
 
-    private List<MedicamentoResponseDTO> medicamentos;
+    private List<AdministracaoMedicamentoResponseDTO> medicamentos;
 
 }

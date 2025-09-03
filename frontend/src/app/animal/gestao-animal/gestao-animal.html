@@ -1,0 +1,108 @@
+<div class="container">
+  <h1 class="title">Gestão de Animais</h1>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}<button class="close-btn" (click)="errorMessage = ''">×</button></div>
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}<button class="close-btn" (click)="successMessage = ''">×</button></div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>{{ isEditing ? 'Editar Animal' : 'Cadastrar Novo Animal' }}</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="animalForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="clienteId">Dono (Cliente):</label>
+          <select id="clienteId" formControlName="clienteId" class="form-control">
+            <option [ngValue]="null" disabled>Selecione o dono do animal</option>
+            <option *ngFor="let cliente of listaClientes" [value]="cliente.id">{{ cliente.nome }} (CPF: {{ cliente.cpf }})</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="nome">Nome do Animal:</label>
+          <input type="text" id="nome" formControlName="nome" class="form-control" placeholder="Nome do animal">
+        </div>
+        <div class="form-group">
+          <label for="especie">Espécie:</label>
+          <select id="especie" formControlName="especie" class="form-control">
+            <option [ngValue]="null" disabled>Selecione a espécie</option>
+            <option *ngFor="let especie of listaEspecies" [value]="especie">{{ especie }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="porte">Porte:</label>
+          <select id="porte" formControlName="porte" class="form-control">
+            <option [ngValue]="null" disabled>Selecione o porte</option>
+            <option *ngFor="let porte of listaPortes" [value]="porte">{{ porte }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sexo">Sexo:</label>
+          <select id="sexo" formControlName="sexo" class="form-control">
+            <option [ngValue]="null" disabled>Selecione o sexo</option>
+            <option *ngFor="let sexo of listaSexos" [value]="sexo">{{ sexo }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="raca">Raça:</label>
+          <input type="text" id="raca" formControlName="raca" class="form-control" placeholder="Raça do animal">
+        </div>
+        <div class="form-group">
+          <label for="cor">Cor:</label>
+          <input type="text" id="cor" formControlName="cor" class="form-control" placeholder="Cor predominante">
+        </div>
+        <div class="form-group">
+          <label for="peso">Peso (kg):</label>
+          <input type="number" id="peso" formControlName="peso" class="form-control" placeholder="Ex: 5.4">
+        </div>
+        <div class="form-group">
+          <label for="dataNascimento">Data de Nascimento:</label>
+          <input type="date" id="dataNascimento" formControlName="dataNascimento" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Castrado?</label>
+          <div>
+            <label><input type="radio" [value]="true" formControlName="castrado"> Sim</label>
+            <label style="margin-left: 15px;"><input type="radio" [value]="false" formControlName="castrado"> Não</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="observacao">Observações:</label>
+          <textarea id="observacao" formControlName="observacao" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="animalForm.invalid">{{ isEditing ? 'Atualizar' : 'Cadastrar' }}</button>
+          <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2>Lista de Animais</h2></div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Espécie</th>
+          <th>Dono</th>
+          <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let animal of animais">
+          <td>{{ animal.id }}</td>
+          <td>{{ animal.nome }}</td>
+          <td>{{ animal.especie }}</td>
+          <td>{{ animal.cliente.nome }}</td>
+          <td class="actions">
+            <button class="btn btn-sm btn-info" (click)="editAnimal(animal)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteAnimal(animal.id)">Excluir</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

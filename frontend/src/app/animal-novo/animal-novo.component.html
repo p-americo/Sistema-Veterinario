@@ -1,0 +1,83 @@
+<div class="form-container">
+  <aside class="form-sidebar">
+
+    <div class="photo-placeholder" (click)="fileInput.click()">
+
+      <img *ngIf="imagemPreview" [src]="imagemPreview" class="photo-preview" alt="Pré-visualização do pet">
+
+      <span *ngIf="!imagemPreview">+</span>
+    </div>
+
+
+    <button type="button" class="photo-button" (click)="fileInput.click()">Adicionar foto</button>
+
+
+    <input type="file" hidden #fileInput (change)="onFileSelected($event)" accept="image/png, image/jpeg">
+
+    <h2>Cadastrar<br>novo pet</h2>
+  </aside>
+
+  <main class="form-main">
+    <form [formGroup]="animalForm" (ngSubmit)="onSubmit()">
+      <div class="field-group">
+        <div class="form-field">
+          <label for="nome">Nome</label>
+          <input id="nome" type="text" formControlName="nome" placeholder="Nome do pet">
+        </div>
+        <div class="form-field">
+          <label for="raca">Raça</label>
+          <input id="raca" type="text" formControlName="raca" placeholder="Ex: Golden Retriever">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="form-field">
+          <label for="especie">Espécie</label>
+          <select id="especie" formControlName="especie">
+            <option [ngValue]="null" disabled>Selecione</option>
+            <option *ngFor="let item of listaEspecies" [value]="item">{{ item }}</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="porte">Porte</label>
+          <select id="porte" formControlName="porte">
+            <option [ngValue]="null" disabled>Selecione</option>
+            <option *ngFor="let item of listaPortes" [value]="item">{{ item }}</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="sexo">Sexo</label>
+          <select id="sexo" formControlName="sexo">
+            <option [ngValue]="null" disabled>Selecione</option>
+            <option *ngFor="let item of listaSexos" [value]="item">{{ item }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="form-field">
+          <label for="dataNascimento">Data de Nascimento</label>
+          <input id="dataNascimento" type="date" formControlName="dataNascimento">
+        </div>
+        <div class="form-field">
+          <label for="peso">Peso (kg)</label>
+          <input id="peso" type="number" formControlName="peso" placeholder="Ex: 10.5">
+        </div>
+        <div class="form-field checkbox-field">
+          <input id="castrado" type="checkbox" formControlName="castrado">
+          <label for="castrado">Castrado?</label>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="observacao">Observações</label>
+        <textarea id="observacao" formControlName="observacao" rows="3" placeholder="Alguma observação importante sobre o pet..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="animalForm.invalid">Cadastrar</button>
+
+      <div *ngIf="successMessage" class="message success">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="message error">{{ errorMessage }}</div>
+    </form>
+  </main>
+</div>

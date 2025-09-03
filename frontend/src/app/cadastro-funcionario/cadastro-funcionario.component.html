@@ -1,0 +1,71 @@
+<button class="btn-voltar" (click)="voltar.emit()">
+  &#8592; Voltar
+</button>
+
+<div class="form-container">
+  <aside class="form-sidebar">
+    <div class="photo-placeholder">
+      <span>+</span>
+    </div>
+    <button class="photo-button" disabled>Adicionar foto</button>
+    <h2>Cadastrar<br>novo funcionário</h2>
+  </aside>
+
+  <main class="form-main">
+    <form #funcionarioForm="ngForm" (ngSubmit)="onSubmit()">
+      <div class="field-group">
+        <div class="form-field">
+          <label for="nome">Nome Completo</label>
+          <input id="nome" type="text" name="nome" [(ngModel)]="novoFuncionario.nome" required>
+        </div>
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input id="email" type="email" name="email" [(ngModel)]="novoFuncionario.email" required>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="form-field">
+          <label for="cpf">CPF</label>
+          <input id="cpf" type="text" name="cpf" [(ngModel)]="novoFuncionario.cpf" required>
+        </div>
+        <div class="form-field">
+          <label for="telefone">Telefone</label>
+          <input id="telefone" type="text" name="telefone" [(ngModel)]="novoFuncionario.telefone" required>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="form-field">
+          <label for="dataNascimento">Data de Nascimento</label>
+          <input id="dataNascimento" type="date" name="dataNascimento" [(ngModel)]="novoFuncionario.dataNascimento" required>
+        </div>
+        <div class="form-field">
+          <label for="dataAdmissao">Data de Admissão</label>
+          <input id="dataAdmissao" type="date" name="dataAdmissao" [(ngModel)]="novoFuncionario.dataAdmissao" required>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="form-field">
+          <label for="cargo">Cargo</label>
+          <select id="cargo" name="cargoId" [(ngModel)]="novoFuncionario.cargoId" required>
+            <option value="0" disabled>Selecione</option>
+            <option *ngFor="let cargo of cargos" [value]="cargo.id">{{ cargo.cargo }}</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="crmv">CRMV (Opcional)</label>
+          <input id="crmv" type="text" name="crmv" [(ngModel)]="novoFuncionario.crmv">
+        </div>
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="!funcionarioForm.form.valid || isLoading">
+        {{ isLoading ? 'Cadastrando...' : 'Cadastrar' }}
+      </button>
+
+      <div *ngIf="successMessage" class="message success">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="message error">{{ errorMessage }}</div>
+    </form>
+  </main>
+</div>

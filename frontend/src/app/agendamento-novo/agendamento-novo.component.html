@@ -1,0 +1,100 @@
+<div class="form-container-com-voltar">
+  <div class="form-header">
+    <button class="btn-voltar" (click)="voltarParaMenu()" title="Voltar ao menu anterior">
+      &#8592; Voltar
+    </button>
+  </div>
+
+  <div class="agendamento-container">
+    <div *ngIf="mensagemSucesso" class="alert alert-success">{{ mensagemSucesso }}</div>
+    <div *ngIf="mensagemErro" class="alert alert-danger">{{ mensagemErro }}</div>
+
+    <div class="coluna-esquerda">
+      <div class="card pet-selector">
+        <h3>1. Selecione o Animal</h3>
+        <label for="pet-select">Qual pet será atendido?</label>
+        <select id="pet-select" (change)="onPetSelecionado($event)" [disabled]="isLoading">
+          <option value="">Selecione um animal</option>
+          <option *ngFor="let pet of petsDoCliente" [value]="pet.id">
+            {{ pet.nome }}
+          </option>
+        </select>
+      </div>
+
+      <div class="card servico-selector">
+        <h3>2. Selecione o Serviço</h3>
+        <label for="servico-select">Qual serviço será realizado?</label>
+        <select id="servico-select" [(ngModel)]="servicoSelecionadoId" [disabled]="isLoading">
+          <option [ngValue]="null" disabled>Selecione um serviço</option>
+          <option *ngFor="let servico of servicos" [value]="servico.id">
+            {{ servico.tipo }}
+          </option>
+        </select>
+      </div>
+
+      <div class="card calendar-card">
+        <h3>3. Selecione a Data</h3>
+        <div class="calendar-header">
+          <button (click)="mesAnterior()" [disabled]="isLoading">&#8249;</button>
+          <h3>{{ mesAtual | date:'MMMM yyyy' }}</h3>
+          <button (click)="proximoMes()" [disabled]="isLoading">&#8250;</button>
+        </div>
+        <div class="calendar-grid">
+          <div class="day-name" *ngFor="let dia of diasDaSemana">{{ dia }}</div>
+          <div class="day" *ngFor="let dia of diasDoMes"
+               [class.other-month]="dia.outroMes"
+               [class.past-day]="isDiaPassado(dia.data) && !dia.outroMes"
+               [class.selected]="isDiaSelecionado(dia.data)"
+               (click)="!isLoading && !dia.outroMes && !isDiaPassado(dia.data) && selecionarDia(dia.data)">
+            {{ dia.data | date:'d' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="coluna-direita">
+      <div class="card pet-info-card">
+        <div class="pet-image-placeholder">
+          <img *ngIf="imagemPetUrl" [src]="imagemPetUrl" alt="Foto de {{ petSelecionado?.nome }}">
+          <span *ngIf="!imagemPetUrl">🐾</span>
+        </div>
+        <h3 *ngIf="!petSelecionado">Pet Cadastrado</h3>
+        <h3 *ngIf="petSelecionado">{{ petSelecionado?.nome }}</h3>
+        <div *ngIf="petSelecionado; else infoPadrao">
+          <p><b>Espécie/Raça:</b> {{ petSelecionado?.especie }} / {{ petSelecionado?.raca }}</p>
+          <p><b>Sexo:</b> {{ petSelecionado?.sexo }}</p>
+          <p><b>Idade:</b> {{ calcularIdade(petSelecionado?.dataNascimento || '') }} anos</p>
+        </div>
+        <ng-template #infoPadrao>
+          <p><b>Espécie/Raça:</b> -</p>
+          <p><b>Sexo:</b> -</p>
+          <p><b>Idade:</b> -</p>
+        </ng-template>
+      </div>
+
+      <div class="horarios-lembretes-container">
+        <div class="card horarios-card">
+          <h3>4. Horário</h3>
+          <div class="horarios-grid">
+            <button *ngFor="let horario of horariosDisponiveis"
+                    class="horario-btn"
+                    [class.selected]="horario === horarioSelecionado"
+                    (click)="!isLoading && selecionarHorario(horario)">
+              {{ horario }}
+            </button>
+          </div>
+        </div>
+        <div class="card lembretes-card">
+          <h3>Lembretes</h3>
+          <ul>
+            <li>Chegue com 10 minutos de antecedência.</li>
+            <li>Traga seu pet com coleira.</li>
+          </ul>
+        </div>
+      </div>
+      <button class="btn-agendar" [disabled]="!isFormularioValido() || isLoading" (click)="confirmarAgendamento()">
+        {{ isLoading ? 'Agendando...' : 'Confirmar Agendamento' }}
+      </button>
+    </div>
+  </div>
+</div>

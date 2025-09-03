@@ -1,10 +1,11 @@
 package br.com.clinicavet.clinica_api.dto;
 
-import br.com.clinicavet.clinica_api.model.enums.EnumInternacaoStatus; // Importe o Enum
+import br.com.clinicavet.clinica_api.model.enums.EnumInternacaoStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,4 +22,5 @@ public class InternacaoResponseDTO {
     private LocalDateTime dataSaida;
 
     private EnumInternacaoStatus status;
+    private List<DiariaResponseDTO> diarias;
 }

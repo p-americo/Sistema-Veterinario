@@ -11,7 +11,9 @@ import br.com.clinicavet.clinica_api.service.Interface.AnimalService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
@@ -34,20 +36,38 @@ public class AnimalServiceImplement implements AnimalService {
     }
 
     @Transactional
-    public AnimalResponseDTO criarAnimal(AnimalRequestDTO animalDTO) {
+    public AnimalResponseDTO criarAnimal(AnimalRequestDTO animalDTO, MultipartFile arquivoImagem) throws IOException {
+        // Validações Iniciais
         Cliente cliente = clienteRepository.findById(animalDTO.getClienteId())
                 .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado com o ID: " + animalDTO.getClienteId()));
 
         if (animalRepository.existsByNome(animalDTO.getNome()) && animalRepository.existsByClienteId(animalDTO.getClienteId())) {
             throw new DataIntegrityViolationException("Animal ja cadastrado no mesmo cliente");
         }
-        Animal novoAnimal = modelMapper.map(animalDTO, Animal.class);
-        novoAnimal.setId(null);
+
+
+        Animal novoAnimal = new Animal();
+        novoAnimal.setNome(animalDTO.getNome());
+        novoAnimal.setEspecie(animalDTO.getEspecie());
+        novoAnimal.setPorte(animalDTO.getPorte());
+        novoAnimal.setRaca(animalDTO.getRaca());
+        novoAnimal.setSexo(animalDTO.getSexo());
+        novoAnimal.setCor(animalDTO.getCor());
+        novoAnimal.setPeso(animalDTO.getPeso().doubleValue());
+        novoAnimal.setCastrado(animalDTO.getCastrado());
+        novoAnimal.setDataNascimento(animalDTO.getDataNascimento());
+        novoAnimal.setObservacao(animalDTO.getObservacao());
         novoAnimal.setCliente(cliente);
+
+
+        if (arquivoImagem != null && !arquivoImagem.isEmpty()) {
+            novoAnimal.setImagem(arquivoImagem.getBytes());
+        }
+
         Animal animalSalvo = animalRepository.save(novoAnimal);
+
         return mapEntidadeParaResponse(animalSalvo);
     }
-
     @Transactional
     public AnimalResponseDTO buscarAnimalPorId(long animalId) {
         Animal animal = animalRepository.findById(animalId)
@@ -55,6 +75,13 @@ public class AnimalServiceImplement implements AnimalService {
         return mapEntidadeParaResponse(animal);
     }
 
+    @Override
+    @Transactional
+    public byte[] buscarImagemPorIdAnimal(Long id) {
+        Animal animal = animalRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com o ID: " + id));
+        return animal.getImagem();
+    }
 
 
 

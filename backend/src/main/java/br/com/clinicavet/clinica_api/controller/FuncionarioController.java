@@ -4,6 +4,7 @@ import br.com.clinicavet.clinica_api.dto.FuncionarioUpdateDTO;
 import br.com.clinicavet.clinica_api.dto.FuncionarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.FuncionarioResponseDTO;
 import br.com.clinicavet.clinica_api.service.Interface.FuncionarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "Funcionários", description = "Gerenciamento de funcionários e veterinários")
 @RestController
 @RequestMapping("/api/funcionarios")
 @CrossOrigin(origins = "http://localhost:4200") // Adicionado para permitir acesso do frontend

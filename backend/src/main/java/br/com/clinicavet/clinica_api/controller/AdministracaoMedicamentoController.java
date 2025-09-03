@@ -3,6 +3,7 @@ package br.com.clinicavet.clinica_api.controller;
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AdministracaoMedicamentoResponseDTO;
 import br.com.clinicavet.clinica_api.service.Interface.AdminstracaoMedicamentoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +15,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Tag(name = "Administração de Medicamentos", description = "Operações de administração de medicamentos aos animais internados")
 @RestController
 @RequestMapping("/api/administracoes-medicamento")
 public class AdministracaoMedicamentoController {
@@ -26,7 +28,7 @@ public class AdministracaoMedicamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<AdministracaoMedicamentoResponseDTO> criarAdministracao(@RequestBody @Valid AdministracaoMedicamentoRequestDTO administracaoRequestDTO, 
+    public ResponseEntity<AdministracaoMedicamentoResponseDTO> criarAdministracao(@RequestBody @Valid AdministracaoMedicamentoRequestDTO administracaoRequestDTO,
                                                                                  UriComponentsBuilder uriComponentsBuilder) {
         AdministracaoMedicamentoResponseDTO responseDTO = administracaoMedicamentoService.criarAdministracao(administracaoRequestDTO);
 
@@ -74,7 +76,7 @@ public class AdministracaoMedicamentoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AdministracaoMedicamentoResponseDTO> atualizarAdministracao(@PathVariable Long id, 
+    public ResponseEntity<AdministracaoMedicamentoResponseDTO> atualizarAdministracao(@PathVariable Long id,
                                                                                      @RequestBody AdministracaoMedicamentoRequestDTO administracaoRequestDTO) {
         AdministracaoMedicamentoResponseDTO responseDTO = administracaoMedicamentoService.atualizarAdministracao(id, administracaoRequestDTO);
         return ResponseEntity.ok().body(responseDTO);
