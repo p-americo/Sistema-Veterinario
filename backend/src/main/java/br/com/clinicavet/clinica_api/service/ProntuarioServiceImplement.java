@@ -8,8 +8,7 @@ import br.com.clinicavet.clinica_api.model.Animal;
 import br.com.clinicavet.clinica_api.model.Prontuario;
 import br.com.clinicavet.clinica_api.repository.AnimalRepository;
 import br.com.clinicavet.clinica_api.repository.ProntuarioRepository;
-import br.com.clinicavet.clinica_api.service.Interface.MedicamentoService;
-import br.com.clinicavet.clinica_api.service.Interface.ProntuarioServiceInterface;
+import br.com.clinicavet.clinica_api.service.Interface.ProntuarioService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -19,15 +18,14 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class ProntuarioServiceImplement implements ProntuarioServiceInterface {
+public class ProntuarioServiceImplement extends BaseServiceImplement<Prontuario, Long, ProntuarioRequestDTO, ProntuarioResponseDTO> implements ProntuarioService {
 
-    private final MedicamentoService medicamentoService;
     private final ProntuarioRepository prontuarioRepository;
     private final AnimalRepository animalRepository;
     private final ModelMapper modelMapper;
 
-    public ProntuarioServiceImplement(MedicamentoService medicamentoService, ProntuarioRepository prontuarioRepository, AnimalRepository animalRepository, ModelMapper modelMapper) {
-        this.medicamentoService = medicamentoService;
+    public ProntuarioServiceImplement(ProntuarioRepository prontuarioRepository, AnimalRepository animalRepository, ModelMapper modelMapper) {
+        super(prontuarioRepository, modelMapper);
         this.prontuarioRepository = prontuarioRepository;
         this.animalRepository = animalRepository;
         this.modelMapper = modelMapper;
@@ -35,12 +33,11 @@ public class ProntuarioServiceImplement implements ProntuarioServiceInterface {
 
     @Override
     @Transactional
-    public ProntuarioResponseDTO criarProntuario(ProntuarioRequestDTO prontuarioRequestDTO) {
-        // Verificar se o animal existe
+    public ProntuarioResponseDTO criar(ProntuarioRequestDTO prontuarioRequestDTO) {
+
         Animal animal = animalRepository.findById(prontuarioRequestDTO.getAnimalId())
                 .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com o ID: " + prontuarioRequestDTO.getAnimalId()));
 
-        // Verificar se já existe prontuário para este animal
         if (prontuarioRepository.existsByAnimalId(prontuarioRequestDTO.getAnimalId())) {
             throw new DataIntegrityViolationException("Já existe um prontuário para este animal");
         }
@@ -54,46 +51,12 @@ public class ProntuarioServiceImplement implements ProntuarioServiceInterface {
         return mapEntidadeParaResponse(prontuarioSalvo);
     }
 
-    @Override
-    @Transactional
-    public ProntuarioResponseDTO atualizarProntuario(Long id, ProntuarioRequestDTO prontuarioRequestDTO) {
-        Prontuario prontuarioExistente = prontuarioRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Prontuário não encontrado com o ID: " + id));
-
-        modelMapper.map(prontuarioRequestDTO, prontuarioExistente);
-
-        Prontuario prontuarioAtualizado = prontuarioRepository.save(prontuarioExistente);
-        return mapEntidadeParaResponse(prontuarioAtualizado);
-    }
-
-    @Override
-    @Transactional
-    public void deletarProntuario(Long id) {
-        if (!prontuarioRepository.existsById(id)) {
-            throw new NoSuchElementException("Prontuário não encontrado com o ID: " + id);
-        }
-        prontuarioRepository.deleteById(id);
-    }
-
-    @Override
-    public ProntuarioResponseDTO buscarPorId(Long id) {
-        Prontuario prontuario = prontuarioRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Prontuário não encontrado com o ID: " + id));
-        return mapEntidadeParaResponse(prontuario);
-    }
 
     @Override
     public ProntuarioResponseDTO buscarPorAnimalId(Long animalId) {
         Prontuario prontuario = prontuarioRepository.findByAnimalId(animalId)
                 .orElseThrow(() -> new NoSuchElementException("Prontuário não encontrado para o animal com ID: " + animalId));
         return mapEntidadeParaResponse(prontuario);
-    }
-
-    @Override
-    public List<ProntuarioResponseDTO> listarTodos() {
-        return prontuarioRepository.findAll().stream()
-                .map(this::mapEntidadeParaResponse)
-                .collect(Collectors.toList());
     }
 
     @Override

@@ -7,9 +7,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,7 +27,7 @@ public class ServicoController {
 
     @GetMapping
     public ResponseEntity<List<ServicoResponseDTO>> listarServicos() {
-        return ResponseEntity.ok(servicoService.buscarTodos());
+        return ResponseEntity.ok(servicoService.listarTodos());
     }
 
     @GetMapping("/{id}")
@@ -42,7 +39,7 @@ public class ServicoController {
     @PostMapping
     public ResponseEntity<ServicoResponseDTO> cadastrarServico(@RequestBody @Valid ServicoRequestDTO dto, UriComponentsBuilder uriBuilder) {
 
-        ServicoResponseDTO servicoSalvo = servicoService.cadastrarServico(dto);
+        ServicoResponseDTO servicoSalvo = servicoService.cadastrar(dto);
         URI uri = uriBuilder.path("/api/servicos/{id}").buildAndExpand(servicoSalvo.getId()).toUri();
         return ResponseEntity.created(uri).body(servicoSalvo);
     }
@@ -50,14 +47,14 @@ public class ServicoController {
     @PutMapping("/{id}")
     public ResponseEntity<ServicoResponseDTO> atualizarServico(@PathVariable @NotNull Long id, @RequestBody @Valid ServicoRequestDTO dto) {
 
-        ServicoResponseDTO servicoAtualizado = servicoService.atualizarServico(id, dto);
+        ServicoResponseDTO servicoAtualizado = servicoService.atualizar(id, dto);
         return ResponseEntity.ok(servicoAtualizado);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarServico(@PathVariable @NotNull Long id) {
 
-        servicoService.deletarServico(id);
+        servicoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

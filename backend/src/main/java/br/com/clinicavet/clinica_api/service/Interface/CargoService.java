@@ -2,20 +2,17 @@ package br.com.clinicavet.clinica_api.service.Interface;
 
 import br.com.clinicavet.clinica_api.dto.CargoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.CargoResponseDTO;
+import br.com.clinicavet.clinica_api.model.Cargo;
 
-import java.util.List;
 
-public interface CargoService {
 
-    CargoResponseDTO criarCargo (CargoRequestDTO cargo);
+public interface CargoService extends BaseService<Cargo, Long, CargoRequestDTO, CargoResponseDTO> {
 
-    CargoResponseDTO buscarPorId(Long id);
+    void deletar(Long id);
 
-    List<CargoResponseDTO> listarTodos();
+    CargoResponseDTO criar(CargoRequestDTO requestDTO);
 
-    CargoResponseDTO atualizarCargo (Long id, CargoRequestDTO cargo);
-
-    void deletarCargo(Long id);
+    CargoResponseDTO atualizar(Long id, CargoRequestDTO requestDTO);
 
 
 }

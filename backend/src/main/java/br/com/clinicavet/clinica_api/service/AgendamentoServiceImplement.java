@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class AgendamentoServiceImplement implements AgendamentoService {
+public class AgendamentoServiceImplement extends BaseServiceImplement<Agendamento, Long, AgendamentoRequestDTO, AgendamentoResponseDTO> implements AgendamentoService {
 
     // @Autowired faz a injeção das dependecias na classe, caso delcare somente em cima do atributo
     // a não sem construtor o atributo não pode ser final = mutavel
@@ -31,6 +31,7 @@ public class AgendamentoServiceImplement implements AgendamentoService {
 
 
     public AgendamentoServiceImplement(AgendamentoRepository agendamentoRepository, AnimalRepository animalRepository, ServicoRepository servicoRepository, ClienteRepository clienteRepository, ModelMapper modelMapper) {
+       super(agendamentoRepository, modelMapper);
         this.agendamentoRepository = agendamentoRepository;
         this.animalRepository = animalRepository;
         this.servicoRepository = servicoRepository;
@@ -49,18 +50,14 @@ public class AgendamentoServiceImplement implements AgendamentoService {
         if (!animal.getCliente().getId().equals(cliente.getId())) {
             throw new IllegalArgumentException("O animal informado não pertence ao cliente especificado.");
         }
-
-
+        
         Agendamento novoAgendamento = new Agendamento();
         novoAgendamento.setCliente(cliente);
         novoAgendamento.setAnimal(animal);
         novoAgendamento.setServico(servico);
         novoAgendamento.setDataHoraAgendamento(requestDTO.getDataHoraAgendamento());
         novoAgendamento.setObservacoes(requestDTO.getObservacoes());
-
-        // Define o status inicial programmaticamente. O cliente não pode escolher isso.
-        //novoAgendamento.setStatus(StatusAgendamento.AGENDADO);
-
+        novoAgendamento.setStatus(EnumAgendamento.AGENDADO);
         Agendamento agendamentoSalvo = agendamentoRepository.save(novoAgendamento);
 
         return modelMapper.map(agendamentoSalvo, AgendamentoResponseDTO.class);

@@ -3,20 +3,17 @@ package br.com.clinicavet.clinica_api.service.Interface;
 import br.com.clinicavet.clinica_api.dto.FuncionarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.FuncionarioResponseDTO;
 import br.com.clinicavet.clinica_api.dto.FuncionarioUpdateDTO;
+import br.com.clinicavet.clinica_api.model.Funcionario;
 
 import java.util.List;
 
-public interface FuncionarioService {
+public interface FuncionarioService extends BaseService<Funcionario, Long, FuncionarioRequestDTO, FuncionarioResponseDTO> {
 
-    FuncionarioResponseDTO criarFuncionario(FuncionarioRequestDTO requestDTO);
+    FuncionarioResponseDTO criar(FuncionarioRequestDTO requestDTO);
 
-    FuncionarioResponseDTO buscarPorId(Long id);
+    void deletar(Long id);
 
-    List<FuncionarioResponseDTO> buscarTodos();
-
-    void deletarFuncionario(Long id);
-
-    FuncionarioResponseDTO atualizarFuncionario(Long id, FuncionarioUpdateDTO dto);
+    FuncionarioResponseDTO atualizar(Long id, FuncionarioUpdateDTO dto);
 
     List<FuncionarioResponseDTO> listarVeterinarios();
 }

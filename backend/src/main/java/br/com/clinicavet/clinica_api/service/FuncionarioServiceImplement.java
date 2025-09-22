@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class FuncionarioServiceImplement implements FuncionarioService {
+public class FuncionarioServiceImplement extends BaseServiceImplement<Funcionario, Long, FuncionarioRequestDTO, FuncionarioResponseDTO> implements  FuncionarioService {
 
     private final FuncionarioRepository funcionarioRepository;
     private final CargoRepository cargoRepository;
@@ -32,6 +32,7 @@ public class FuncionarioServiceImplement implements FuncionarioService {
     private final UsuarioService usuarioService;
 
     public FuncionarioServiceImplement(FuncionarioRepository funcionarioRepository, CargoRepository cargoRepository, ModelMapper modelMapper, ServicoRepository servicoRepository,  PessoaRepository pessoaRepository, UsuarioService usuarioService) {
+        super(funcionarioRepository, modelMapper);
         this.funcionarioRepository = funcionarioRepository;
         this.cargoRepository = cargoRepository;
         this.modelMapper = modelMapper;
@@ -42,7 +43,7 @@ public class FuncionarioServiceImplement implements FuncionarioService {
 
 
     @Transactional
-    public FuncionarioResponseDTO criarFuncionario(FuncionarioRequestDTO requestDTO) {
+    public FuncionarioResponseDTO criar(FuncionarioRequestDTO requestDTO) {
         Cargo cargo = cargoRepository.findById(requestDTO.getCargoId())
                 .orElseThrow(() -> new NoSuchElementException("Cargo não encontrado com o ID: " + requestDTO.getCargoId()));
 
@@ -75,20 +76,7 @@ public class FuncionarioServiceImplement implements FuncionarioService {
         return modelMapper.map(funcionarioSalvo, FuncionarioResponseDTO.class);
     }
 
-    @Transactional(readOnly = true)
-    public FuncionarioResponseDTO buscarPorId(Long id) {
-        Funcionario funcionario = funcionarioRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Funcionário não encontrado com o ID: " + id));
-        return modelMapper.map(funcionario, FuncionarioResponseDTO.class);
-    }
 
-    @Transactional(readOnly = true)
-    public List<FuncionarioResponseDTO> buscarTodos() {
-        return funcionarioRepository.findAll()
-                .stream()
-                .map(func -> modelMapper.map(func, FuncionarioResponseDTO.class))
-                .collect(Collectors.toList());
-    }
 
     @Transactional(readOnly = true)
     public List<FuncionarioResponseDTO> listarVeterinarios() {
@@ -99,7 +87,7 @@ public class FuncionarioServiceImplement implements FuncionarioService {
     }
 
     @Transactional
-    public FuncionarioResponseDTO atualizarFuncionario(Long id, FuncionarioUpdateDTO dto) {
+    public FuncionarioResponseDTO atualizar(Long id, FuncionarioUpdateDTO dto) {
         Funcionario funcionarioExistente = funcionarioRepository.findById(id)
                 .orElseThrow(() -> new DataIntegrityViolationException("Funcionário não encontrado para atualização com o ID: " + id));
 
@@ -129,7 +117,7 @@ public class FuncionarioServiceImplement implements FuncionarioService {
     }
 
     @Transactional
-    public void deletarFuncionario(Long id) {
+    public void deletar(Long id) {
         if (!funcionarioRepository.existsById(id)) {
             throw new NoSuchElementException("Funcionário não encontrado para deleção com o ID: " + id);
         }

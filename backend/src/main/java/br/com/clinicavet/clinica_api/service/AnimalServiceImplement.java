@@ -12,16 +12,14 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+
 
 @Service
-public class AnimalServiceImplement implements AnimalService {
+public class AnimalServiceImplement extends BaseServiceImplement< Animal, Long, AnimalRequestDTO, AnimalResponseDTO> implements AnimalService {
 
     private final AnimalRepository animalRepository;
     private final ModelMapper modelMapper;
@@ -29,14 +27,16 @@ public class AnimalServiceImplement implements AnimalService {
 
 
     public AnimalServiceImplement(AnimalRepository animalRepository, ModelMapper modelMapper, ClienteRepository clienteRepository) {
+        super(animalRepository, modelMapper);
         this.animalRepository = animalRepository;
         this.modelMapper = modelMapper;
         this.clienteRepository = clienteRepository;
         this.modelMapper.getConfiguration().setSkipNullEnabled(true);
     }
 
+
     @Transactional
-    public AnimalResponseDTO criarAnimal(AnimalRequestDTO animalDTO, MultipartFile arquivoImagem) throws IOException {
+    public AnimalResponseDTO criar(AnimalRequestDTO animalDTO, MultipartFile arquivoImagem) throws IOException {
         // Validações Iniciais
         Cliente cliente = clienteRepository.findById(animalDTO.getClienteId())
                 .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado com o ID: " + animalDTO.getClienteId()));
@@ -68,12 +68,6 @@ public class AnimalServiceImplement implements AnimalService {
 
         return mapEntidadeParaResponse(animalSalvo);
     }
-    @Transactional
-    public AnimalResponseDTO buscarAnimalPorId(long animalId) {
-        Animal animal = animalRepository.findById(animalId)
-                .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com o ID: " + animalId));
-        return mapEntidadeParaResponse(animal);
-    }
 
     @Override
     @Transactional
@@ -84,16 +78,8 @@ public class AnimalServiceImplement implements AnimalService {
     }
 
 
-
     @Override
-    public List<AnimalResponseDTO> listarTodos() {
-        return animalRepository.findAll().stream()
-                .map(this::mapEntidadeParaResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public AnimalResponseDTO atualizarAnimal(Long animalId, AnimalRequestDTO animalDTO) {
+    public AnimalResponseDTO atualizar(Long animalId, AnimalRequestDTO animalDTO) {
         Animal animalExistente = animalRepository.findById(animalId)
                 .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com o ID: " + animalId));
         modelMapper.map(animalDTO, animalExistente);
@@ -108,19 +94,6 @@ public class AnimalServiceImplement implements AnimalService {
         return mapEntidadeParaResponse(animalAtualizado);
     }
 
-    @Override
-    @Transactional
-    public void deletarAnimal(Long id) {
-        animalRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Animal não encontrado com o ID: " + id));
-        animalRepository.deleteById(id);
-    }
-
-    @Override
-    public AnimalResponseDTO buscarPorId(Long id) {
-        Animal animal = animalRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com o ID: " + id));
-        return mapEntidadeParaResponse(animal);
-    }
 
 
     private AnimalResponseDTO mapEntidadeParaResponse(Animal animal) {

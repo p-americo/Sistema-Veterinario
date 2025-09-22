@@ -28,7 +28,7 @@ public class MedicamentoController {
     @PostMapping
     public ResponseEntity<MedicamentoResponseDTO> criarMedicamento(@RequestBody @Valid MedicamentoRequestDTO medicamentoRequestDTO,
                                                                    UriComponentsBuilder uriComponentsBuilder) {
-        MedicamentoResponseDTO responseDTO = medicamentoService.criarMedicamento(medicamentoRequestDTO);
+        MedicamentoResponseDTO responseDTO = medicamentoService.criar(medicamentoRequestDTO);
 
         URI uri = uriComponentsBuilder.path("/api/medicamentos/{id}").buildAndExpand(responseDTO.getId()).toUri();
 
@@ -50,13 +50,13 @@ public class MedicamentoController {
     @PutMapping("/{id}")
     public ResponseEntity<MedicamentoResponseDTO> atualizarMedicamento(@PathVariable Long id,
                                                                        @RequestBody @Valid MedicamentoRequestDTO medicamentoRequestDTO) {
-        MedicamentoResponseDTO responseDTO = medicamentoService.atualizarMedicamento(id, medicamentoRequestDTO);
+        MedicamentoResponseDTO responseDTO = medicamentoService.atualizar(id, medicamentoRequestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarMedicamento(@PathVariable Long id) {
-        medicamentoService.deletarMedicamento(id);
+        medicamentoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

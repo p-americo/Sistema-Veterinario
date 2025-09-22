@@ -1,6 +1,6 @@
 package br.com.clinicavet.clinica_api.Execeptions;
 
-import br.com.clinicavet.clinica_api.Execeptions.DataIntegrityViolationException;
+
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     // Handler para violação de integridade/dados duplicados (nosso erro de CPF)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex) {
-        ErrorResponse resposta = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        ErrorResponse resposta = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Já existe um registro com esse valor único: " + ex.getMessage());
         // Retorna um status HTTP 409 Conflict, que é apropriado para dados duplicados
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
     }

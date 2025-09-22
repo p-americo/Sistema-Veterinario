@@ -2,21 +2,14 @@ package br.com.clinicavet.clinica_api.service.Interface;
 
 import br.com.clinicavet.clinica_api.dto.ServicoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ServicoResponseDTO;
-import org.springframework.data.domain.Pageable;
+import br.com.clinicavet.clinica_api.model.Servico;
 
-import java.util.List;
 
-public interface ServicoService {
+public interface ServicoService extends BaseService<Servico, Long, ServicoRequestDTO, ServicoResponseDTO> {
 
-    ServicoResponseDTO buscarPorId(Long id);
+    ServicoResponseDTO cadastrar(ServicoRequestDTO servicoRequestDTO);
 
-    List<ServicoResponseDTO> buscarTodos();
-
-    ServicoResponseDTO cadastrarServico(ServicoRequestDTO servicoRequestDTO);
-
-    ServicoResponseDTO atualizarServico(Long id, ServicoRequestDTO update);
-
-    void deletarServico(Long id);
+    ServicoResponseDTO atualizar(Long id, ServicoRequestDTO update);
 
 
 

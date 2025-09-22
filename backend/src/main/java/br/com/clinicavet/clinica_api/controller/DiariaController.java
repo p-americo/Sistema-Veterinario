@@ -25,14 +25,14 @@ public class DiariaController {
 
     @PostMapping
     public ResponseEntity<DiariaResponseDTO> criar(@RequestBody @Valid DiariaRequestDTO dto, UriComponentsBuilder uriBuilder) {
-        DiariaResponseDTO resposta = diariaService.criarDiaria(dto);
+        DiariaResponseDTO resposta = diariaService.criar(dto);
         URI uri = uriBuilder.path("/api/internacoes/diarias/{id}").buildAndExpand(resposta.getId()).toUri();
         return ResponseEntity.created(uri).body(resposta);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<DiariaResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid DiariaRequestDTO dto) {
-        DiariaResponseDTO resposta = diariaService.atualizarDiaria(id, dto);
+        DiariaResponseDTO resposta = diariaService.atualizar(id, dto);
         return ResponseEntity.ok(resposta);
     }
 
@@ -43,7 +43,7 @@ public class DiariaController {
 
     @GetMapping
     public ResponseEntity<List<DiariaResponseDTO>> listarTodas() {
-        return ResponseEntity.ok(diariaService.listarTodas());
+        return ResponseEntity.ok(diariaService.listarTodos());
     }
 
     @GetMapping("/internacao/{internacaoId}")
@@ -53,7 +53,7 @@ public class DiariaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        diariaService.deletarDiaria(id);
+        diariaService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

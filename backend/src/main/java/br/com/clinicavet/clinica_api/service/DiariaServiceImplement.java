@@ -16,13 +16,14 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class DiariaServiceImplement implements DiariaService {
+public class DiariaServiceImplement extends BaseServiceImplement<DiariaInternacao, Long, DiariaRequestDTO, DiariaResponseDTO> implements DiariaService {
 
     private final DiariaRepository diariaRepository;
     private final InternacaoRepository internacaoRepository;
     private final ModelMapper mapper;
 
     public DiariaServiceImplement(DiariaRepository diariaRepository, InternacaoRepository internacaoRepository, ModelMapper mapper) {
+        super(diariaRepository, mapper);
         this.diariaRepository = diariaRepository;
         this.internacaoRepository = internacaoRepository;
         this.mapper = mapper;
@@ -30,7 +31,7 @@ public class DiariaServiceImplement implements DiariaService {
 
     @Override
     @Transactional
-    public DiariaResponseDTO criarDiaria(DiariaRequestDTO dto) {
+    public DiariaResponseDTO criar(DiariaRequestDTO dto) {
         Internacao internacao = internacaoRepository.findById(dto.getInternacaoId())
                 .orElseThrow(() -> new NoSuchElementException("Internação não encontrada com o ID: " + dto.getInternacaoId()));
 
@@ -47,41 +48,13 @@ public class DiariaServiceImplement implements DiariaService {
 
 
     @Override
-    public DiariaResponseDTO atualizarDiaria(Long id, DiariaRequestDTO dto) {
+    public DiariaResponseDTO atualizar(Long id, DiariaRequestDTO dto) {
         DiariaInternacao diaria = diariaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Diária não encontrada"));
-
         mapper.map(dto, diaria);
         diaria.getMedicamentos().clear();
-/*
-        if (dto.getMedicamentos() != null) {
-            List<TipoAdminstracaoMedicamento> medicamentos = dto.getMedicamentos().stream().map(medDto -> {
-                TipoAdminstracaoMedicamento med = new TipoAdminstracaoMedicamento();
-                med.setNome(medDto.getNome());
-                med.setDosagem(medDto.getDosagem());
-                med.setDiaria(diaria);
-                return med;
-            }).collect(Collectors.toList());
-
-            diaria.getMedicamentos().addAll(medicamentos);
-        }
-*/
         DiariaInternacao salva = diariaRepository.save(diaria);
         return mapper.map(salva, DiariaResponseDTO.class);
-    }
-
-    @Override
-    public DiariaResponseDTO buscarPorId(Long id) {
-        DiariaInternacao diaria = diariaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Diária não encontrada"));
-        return mapper.map(diaria, DiariaResponseDTO.class);
-    }
-
-    @Override
-    public List<DiariaResponseDTO> listarTodas() {
-        return diariaRepository.findAll().stream()
-                .map(diaria -> mapper.map(diaria, DiariaResponseDTO.class))
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -91,11 +64,4 @@ public class DiariaServiceImplement implements DiariaService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void deletarDiaria(Long id) {
-        if (!diariaRepository.existsById(id)) {
-            throw new NoSuchElementException("Diária não encontrada");
-        }
-        diariaRepository.deleteById(id);
-    }
 }

@@ -30,7 +30,7 @@ public class AdministracaoMedicamentoController {
     @PostMapping
     public ResponseEntity<AdministracaoMedicamentoResponseDTO> criarAdministracao(@RequestBody @Valid AdministracaoMedicamentoRequestDTO administracaoRequestDTO,
                                                                                  UriComponentsBuilder uriComponentsBuilder) {
-        AdministracaoMedicamentoResponseDTO responseDTO = administracaoMedicamentoService.criarAdministracao(administracaoRequestDTO);
+        AdministracaoMedicamentoResponseDTO responseDTO = administracaoMedicamentoService.criar(administracaoRequestDTO);
 
         URI uri = uriComponentsBuilder.path("/api/administracoes-medicamento/{id}").buildAndExpand(responseDTO.getId()).toUri();
 
@@ -78,13 +78,13 @@ public class AdministracaoMedicamentoController {
     @PutMapping("/{id}")
     public ResponseEntity<AdministracaoMedicamentoResponseDTO> atualizarAdministracao(@PathVariable Long id,
                                                                                      @RequestBody AdministracaoMedicamentoRequestDTO administracaoRequestDTO) {
-        AdministracaoMedicamentoResponseDTO responseDTO = administracaoMedicamentoService.atualizarAdministracao(id, administracaoRequestDTO);
+        AdministracaoMedicamentoResponseDTO responseDTO = administracaoMedicamentoService.atualizar(id, administracaoRequestDTO);
         return ResponseEntity.ok().body(responseDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarAdministracao(@PathVariable Long id) {
-        administracaoMedicamentoService.deletarAdministracao(id);
+        administracaoMedicamentoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

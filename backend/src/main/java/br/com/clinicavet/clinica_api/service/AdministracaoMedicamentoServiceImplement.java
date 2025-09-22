@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class AdministracaoMedicamentoServiceImplement implements AdminstracaoMedicamentoService {
+public class AdministracaoMedicamentoServiceImplement extends BaseServiceImplement<AdministracaoMedicamento, Long, AdministracaoMedicamentoRequestDTO, AdministracaoMedicamentoResponseDTO > implements AdminstracaoMedicamentoService {
 
     private final AdministracaoMedicamentoRepository administracaoMedicamentoRepository;
     private final RegistroProntuarioRepository registroProntuarioRepository;
@@ -30,6 +30,7 @@ public class AdministracaoMedicamentoServiceImplement implements AdminstracaoMed
     private final ModelMapper modelMapper;
 
     public AdministracaoMedicamentoServiceImplement(AdministracaoMedicamentoRepository administracaoMedicamentoRepository, RegistroProntuarioRepository registroProntuarioRepository, FuncionarioRepository funcionarioRepository, MedicamentoRepository medicamentoRepository, ModelMapper modelMapper) {
+        super(administracaoMedicamentoRepository, modelMapper);
         this.administracaoMedicamentoRepository = administracaoMedicamentoRepository;
         this.registroProntuarioRepository = registroProntuarioRepository;
         this.funcionarioRepository = funcionarioRepository;
@@ -40,7 +41,7 @@ public class AdministracaoMedicamentoServiceImplement implements AdminstracaoMed
 
     @Override
     @Transactional
-    public AdministracaoMedicamentoResponseDTO criarAdministracao(AdministracaoMedicamentoRequestDTO dto) {
+    public AdministracaoMedicamentoResponseDTO criar(AdministracaoMedicamentoRequestDTO dto) {
 
         RegistroProntuario entradaProntuario = registroProntuarioRepository.findById(dto.getEntradaProntuarioId())
                 .orElseThrow(() -> new NoSuchElementException("Entrada do prontuário não encontrada com o ID: " + dto.getEntradaProntuarioId()));
@@ -65,7 +66,7 @@ public class AdministracaoMedicamentoServiceImplement implements AdminstracaoMed
 
     @Override
     @Transactional
-    public AdministracaoMedicamentoResponseDTO atualizarAdministracao(Long id, AdministracaoMedicamentoRequestDTO dto) {
+    public AdministracaoMedicamentoResponseDTO atualizar(Long id, AdministracaoMedicamentoRequestDTO dto) {
         AdministracaoMedicamento administracaoExistente = administracaoMedicamentoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Administração de medicamento não encontrada com o ID: " + id));
 
@@ -87,21 +88,7 @@ public class AdministracaoMedicamentoServiceImplement implements AdminstracaoMed
         return mapEntidadeParaResponse(administracaoAtualizada);
     }
 
-    @Override
-    @Transactional
-    public void deletarAdministracao(Long id) {
-        if (!administracaoMedicamentoRepository.existsById(id)) {
-            throw new NoSuchElementException("Administração de medicamento não encontrada com o ID: " + id);
-        }
-        administracaoMedicamentoRepository.deleteById(id);
-    }
 
-    @Override
-    public AdministracaoMedicamentoResponseDTO buscarPorId(Long id) {
-        AdministracaoMedicamento administracao = administracaoMedicamentoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Administração de medicamento não encontrada com o ID: " + id));
-        return mapEntidadeParaResponse(administracao);
-    }
 
     @Override
     public List<AdministracaoMedicamentoResponseDTO> buscarPorEntradaProntuarioId(Long entradaProntuarioId) {
@@ -131,12 +118,6 @@ public class AdministracaoMedicamentoServiceImplement implements AdminstracaoMed
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<AdministracaoMedicamentoResponseDTO> listarTodos() {
-        return administracaoMedicamentoRepository.findAll().stream()
-                .map(this::mapEntidadeParaResponse)
-                .collect(Collectors.toList());
-    }
 
     private AdministracaoMedicamentoResponseDTO mapEntidadeParaResponse(AdministracaoMedicamento administracao) {
         AdministracaoMedicamentoResponseDTO dto = modelMapper.map(administracao, AdministracaoMedicamentoResponseDTO.class);

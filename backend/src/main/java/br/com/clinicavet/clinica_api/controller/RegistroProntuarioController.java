@@ -2,7 +2,7 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioResponseDTO;
-import br.com.clinicavet.clinica_api.service.Interface.RegistroProntuarioServiceInterface;
+import br.com.clinicavet.clinica_api.service.Interface.RegistroProntuarioService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +20,17 @@ import java.util.List;
 @RequestMapping("/api/registros-prontuario")
 public class RegistroProntuarioController {
 
-    private final RegistroProntuarioServiceInterface registroProntuarioService;
+    private final RegistroProntuarioService registroProntuarioService;
 
     @Autowired
-    public RegistroProntuarioController(RegistroProntuarioServiceInterface registroProntuarioService) {
+    public RegistroProntuarioController(RegistroProntuarioService registroProntuarioService) {
         this.registroProntuarioService = registroProntuarioService;
     }
 
     @PostMapping
     public ResponseEntity<RegistroProntuarioResponseDTO> criarRegistro(@RequestBody @Valid RegistroProntuarioRequestDTO registroRequestDTO,
                                                                       UriComponentsBuilder uriComponentsBuilder) {
-        RegistroProntuarioResponseDTO responseDTO = registroProntuarioService.criarRegistro(registroRequestDTO);
+        RegistroProntuarioResponseDTO responseDTO = registroProntuarioService.criar(registroRequestDTO);
 
         URI uri = uriComponentsBuilder.path("/api/registros-prontuario/{id}").buildAndExpand(responseDTO.getId()).toUri();
 
@@ -84,13 +84,13 @@ public class RegistroProntuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<RegistroProntuarioResponseDTO> atualizarRegistro(@PathVariable Long id,
                                                                           @RequestBody @Valid RegistroProntuarioRequestDTO registroRequestDTO) {
-        RegistroProntuarioResponseDTO responseDTO = registroProntuarioService.atualizarRegistro(id, registroRequestDTO);
+        RegistroProntuarioResponseDTO responseDTO = registroProntuarioService.atualizar(id, registroRequestDTO);
         return ResponseEntity.ok().body(responseDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarRegistro(@PathVariable Long id) {
-        registroProntuarioService.deletarRegistro(id);
+        registroProntuarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

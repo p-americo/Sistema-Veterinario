@@ -26,14 +26,14 @@ public class FuncionarioController {
 
     @PostMapping
     public ResponseEntity<FuncionarioResponseDTO> criarFuncionario(@RequestBody FuncionarioRequestDTO requestDTO, UriComponentsBuilder uriBuilder) {
-        FuncionarioResponseDTO responseDTO = funcionarioService.criarFuncionario(requestDTO);
+        FuncionarioResponseDTO responseDTO = funcionarioService.criar(requestDTO);
         URI uri = uriBuilder.path("/api/funcionarios/{id}").buildAndExpand(responseDTO.getId()).toUri();
         return ResponseEntity.created(uri).body(responseDTO);
     }
 
     @GetMapping
     public ResponseEntity<List<FuncionarioResponseDTO>> buscarTodos() {
-        return ResponseEntity.ok(funcionarioService.buscarTodos());
+        return ResponseEntity.ok(funcionarioService.listarTodos());
     }
 
     @GetMapping("/veterinarios")
@@ -49,13 +49,13 @@ public class FuncionarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<FuncionarioResponseDTO> atualizarFuncionario(@PathVariable Long id, @RequestBody FuncionarioUpdateDTO requestDTO) {
-        FuncionarioResponseDTO responseDTO = funcionarioService.atualizarFuncionario(id, requestDTO);
+        FuncionarioResponseDTO responseDTO = funcionarioService.atualizar(id, requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarFuncionario(@PathVariable Long id) {
-        funcionarioService.deletarFuncionario(id);
+        funcionarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

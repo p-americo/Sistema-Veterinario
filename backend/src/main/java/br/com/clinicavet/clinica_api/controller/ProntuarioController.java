@@ -2,7 +2,7 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.ProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ProntuarioResponseDTO;
-import br.com.clinicavet.clinica_api.service.Interface.ProntuarioServiceInterface;
+import br.com.clinicavet.clinica_api.service.Interface.ProntuarioService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +18,17 @@ import java.util.List;
 @RequestMapping("/api/prontuarios")
 public class ProntuarioController {
 
-    private final ProntuarioServiceInterface prontuarioService;
+    private final ProntuarioService prontuarioService;
 
     @Autowired
-    public ProntuarioController(ProntuarioServiceInterface prontuarioService) {
+    public ProntuarioController(ProntuarioService prontuarioService) {
         this.prontuarioService = prontuarioService;
     }
 
     @PostMapping
     public ResponseEntity<ProntuarioResponseDTO> criarProntuario(@RequestBody @Valid ProntuarioRequestDTO prontuarioRequestDTO, 
                                                                UriComponentsBuilder uriComponentsBuilder) {
-        ProntuarioResponseDTO responseDTO = prontuarioService.criarProntuario(prontuarioRequestDTO);
+        ProntuarioResponseDTO responseDTO = prontuarioService.criar(prontuarioRequestDTO);
 
         URI uri = uriComponentsBuilder.path("/api/prontuarios/{id}").buildAndExpand(responseDTO.getId()).toUri();
 
@@ -62,13 +62,13 @@ public class ProntuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<ProntuarioResponseDTO> atualizarProntuario(@PathVariable Long id, 
                                                                    @RequestBody @Valid ProntuarioRequestDTO prontuarioRequestDTO) {
-        ProntuarioResponseDTO responseDTO = prontuarioService.atualizarProntuario(id, prontuarioRequestDTO);
+        ProntuarioResponseDTO responseDTO = prontuarioService.atualizar(id, prontuarioRequestDTO);
         return ResponseEntity.ok().body(responseDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarProntuario(@PathVariable Long id) {
-        prontuarioService.deletarProntuario(id);
+        prontuarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

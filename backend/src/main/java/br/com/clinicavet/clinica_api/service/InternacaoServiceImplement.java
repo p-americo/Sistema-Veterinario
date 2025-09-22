@@ -9,7 +9,7 @@ import br.com.clinicavet.clinica_api.model.Internacao;
 import br.com.clinicavet.clinica_api.model.enums.EnumInternacaoStatus; // Importe o Enum
 import br.com.clinicavet.clinica_api.repository.AnimalRepository;
 import br.com.clinicavet.clinica_api.repository.InternacaoRepository;
-import br.com.clinicavet.clinica_api.service.Interface.InternacaoServiceInterface;
+import br.com.clinicavet.clinica_api.service.Interface.InternacaoService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,13 +21,14 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class InternacaoServiceImplement implements InternacaoServiceInterface {
+public class InternacaoServiceImplement extends BaseServiceImplement<Internacao, Long, InternacaoRequestDTO, InternacaoResponseDTO> implements InternacaoService {
 
     private final InternacaoRepository repository;
     private final AnimalRepository animalRepository;
     private final ModelMapper mapper;
 
     public InternacaoServiceImplement(InternacaoRepository repository, AnimalRepository animalRepository, ModelMapper mapper) {
+        super(repository, mapper);
         this.repository = repository;
         this.animalRepository = animalRepository;
         this.mapper = mapper;
@@ -35,7 +36,7 @@ public class InternacaoServiceImplement implements InternacaoServiceInterface {
 
     @Override
     @Transactional
-    public InternacaoResponseDTO criarInternacao(InternacaoRequestDTO dto) {
+    public InternacaoResponseDTO criar(InternacaoRequestDTO dto) {
         Animal animal = animalRepository.findById(dto.getAnimalId())
                 .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com o ID: " + dto.getAnimalId()));
 
@@ -84,7 +85,7 @@ public class InternacaoServiceImplement implements InternacaoServiceInterface {
 
     @Override
     @Transactional
-    public InternacaoResponseDTO atualizarInternacao(Long id, InternacaoRequestDTO dto) {
+    public InternacaoResponseDTO atualizar(Long id, InternacaoRequestDTO dto) {
         Internacao existente = repository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Internação não encontrada"));
 
@@ -99,28 +100,6 @@ public class InternacaoServiceImplement implements InternacaoServiceInterface {
         return mapToResponseDTO(atualizada, true);
     }
 
-    @Override
-    public InternacaoResponseDTO buscarPorId(Long id) {
-        Internacao internacao = repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Internação não encontrada"));
-
-        return mapToResponseDTO(internacao, true);
-    }
-
-    @Override
-    public List<InternacaoResponseDTO> listarTodas() {
-        return repository.findAll().stream()
-                .map(internacao -> mapToResponseDTO(internacao, false))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public void deletarInternacao(Long id) {
-        if (!repository.existsById(id)) {
-            throw new NoSuchElementException("Internação não encontrada");
-        }
-        repository.deleteById(id);
-    }
 
     private InternacaoResponseDTO mapToResponseDTO(Internacao internacao, boolean incluirDiarias) {
         InternacaoResponseDTO dto = mapper.map(internacao, InternacaoResponseDTO.class);

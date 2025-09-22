@@ -4,6 +4,7 @@ import br.com.clinicavet.clinica_api.dto.ClienteUpdateDTO;
 import br.com.clinicavet.clinica_api.dto.ClienteRequestDTO;
 import br.com.clinicavet.clinica_api.dto.ClienteResponseDTO;
 import br.com.clinicavet.clinica_api.service.Interface.ClienteService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class ClienteController {
 
     @PostMapping
     public ResponseEntity<ClienteResponseDTO> criarCliente(@RequestBody ClienteRequestDTO clienteRequestDTO, UriComponentsBuilder uriBuilder) {
-        ClienteResponseDTO responseDTO = clienteService.criarCliente(clienteRequestDTO);
+        ClienteResponseDTO responseDTO = clienteService.criar(clienteRequestDTO);
         URI uri = uriBuilder.path("/api/clientes/{id}").buildAndExpand(responseDTO.getId()).toUri();
         return ResponseEntity.created(uri).body(responseDTO);
     }
@@ -51,6 +52,10 @@ public class ClienteController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @Operation(
+            summary = "Atualiza os dados de um cliente existente",
+            description = "Apenas os campos fornecidos no corpo da requisição serão atualizados."
+    )
     @PutMapping("/{id}")
     public ResponseEntity<ClienteResponseDTO> atualizarCliente(@PathVariable Long id, @RequestBody ClienteUpdateDTO UpdateRequestDTO) {
         ClienteResponseDTO responseDTO = clienteService.atualizarCliente(id, UpdateRequestDTO);
@@ -59,7 +64,7 @@ public class ClienteController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarCliente(@PathVariable Long id) {
-        clienteService.deletarCliente(id);
+        clienteService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

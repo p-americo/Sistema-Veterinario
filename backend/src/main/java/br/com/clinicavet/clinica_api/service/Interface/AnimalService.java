@@ -2,25 +2,18 @@ package br.com.clinicavet.clinica_api.service.Interface;
 
 import br.com.clinicavet.clinica_api.dto.AnimalRequestDTO;
 import br.com.clinicavet.clinica_api.dto.AnimalResponseDTO;
+import br.com.clinicavet.clinica_api.model.Animal;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.util.List;
 
-public interface AnimalService {
 
-    AnimalResponseDTO criarAnimal(AnimalRequestDTO animalDTO, MultipartFile arquivoImagem) throws IOException;
+public interface AnimalService extends  BaseService<Animal, Long, AnimalRequestDTO, AnimalResponseDTO> {
 
-    AnimalResponseDTO buscarAnimalPorId(long animalId);
+    AnimalResponseDTO criar(AnimalRequestDTO animalDTO, MultipartFile arquivoImagem) throws IOException;
 
-    List<AnimalResponseDTO> listarTodos();
-
-    AnimalResponseDTO atualizarAnimal(Long animalId, AnimalRequestDTO animalDTO);
-
-    void deletarAnimal(Long id);
+    AnimalResponseDTO atualizar(Long animalId, AnimalRequestDTO animalDTO);
 
     AnimalResponseDTO buscarPorId(Long id);
-
 
     byte[] buscarImagemPorIdAnimal(Long id);
 

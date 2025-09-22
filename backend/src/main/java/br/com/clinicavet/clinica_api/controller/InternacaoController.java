@@ -2,7 +2,7 @@ package br.com.clinicavet.clinica_api.controller;
 
 import br.com.clinicavet.clinica_api.dto.InternacaoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.InternacaoResponseDTO;
-import br.com.clinicavet.clinica_api.service.Interface.InternacaoServiceInterface;
+import br.com.clinicavet.clinica_api.service.Interface.InternacaoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,22 +18,22 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200") // Necessário para o Angular
 public class InternacaoController {
 
-    private final InternacaoServiceInterface internacaoService;
+    private final InternacaoService internacaoService;
 
-    public InternacaoController(InternacaoServiceInterface internacaoService) {
+    public InternacaoController(InternacaoService internacaoService) {
         this.internacaoService = internacaoService;
     }
 
     @PostMapping
     public ResponseEntity<InternacaoResponseDTO> criarInternacao(@RequestBody @Valid InternacaoRequestDTO dto, UriComponentsBuilder uriBuilder) {
-        InternacaoResponseDTO resposta = internacaoService.criarInternacao(dto);
+        InternacaoResponseDTO resposta = internacaoService.criar(dto);
         URI uri = uriBuilder.path("/api/internacoes/{id}").buildAndExpand(resposta.getId()).toUri();
         return ResponseEntity.created(uri).body(resposta);
     }
 
     @GetMapping
     public ResponseEntity<List<InternacaoResponseDTO>> listarTodas() {
-        return ResponseEntity.ok(internacaoService.listarTodas());
+        return ResponseEntity.ok(internacaoService.listarTodos());
     }
 
     @GetMapping("/animal/{animalId}/ativa")
@@ -53,12 +53,12 @@ public class InternacaoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<InternacaoResponseDTO> atualizarInternacao(@PathVariable Long id, @RequestBody @Valid InternacaoRequestDTO dto) {
-        return ResponseEntity.ok(internacaoService.atualizarInternacao(id, dto));
+        return ResponseEntity.ok(internacaoService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        internacaoService.deletarInternacao(id);
+        internacaoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

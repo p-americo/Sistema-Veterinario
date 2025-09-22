@@ -13,42 +13,25 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class ServicoServiceImplement implements ServicoService {
+public class ServicoServiceImplement extends BaseServiceImplement<Servico, Long, ServicoRequestDTO, ServicoResponseDTO> implements ServicoService {
 
-    private final ServicoRepository servicoRepository; // Boa prática: usar 'final'
+    private final ServicoRepository servicoRepository;
     private final FuncionarioRepository funcionarioRepository;
     private final ModelMapper modelMapper;
 
 
     public ServicoServiceImplement(ServicoRepository servicoRepository, FuncionarioRepository funcionarioRepository, ModelMapper modelMapper) {
+        super(servicoRepository, modelMapper);
         this.servicoRepository = servicoRepository;
         this.funcionarioRepository = funcionarioRepository;
         this.modelMapper = modelMapper;
     }
 
-    @Transactional(readOnly = true)
-    public List<ServicoResponseDTO> buscarTodos() {
-        return servicoRepository.findAll()
-                .stream()
-                .map(func -> modelMapper.map(func, ServicoResponseDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public ServicoResponseDTO buscarPorId(Long id) {
-        Servico servico = servicoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + id));
-        return mapEntidadeParaResponseDTO(servico);
-    }
-
-    // Dentro da classe de serviço para Servico
 
     @Transactional
-    public ServicoResponseDTO cadastrarServico(ServicoRequestDTO dto) {
+    public ServicoResponseDTO cadastrar(ServicoRequestDTO dto) {
         Funcionario veterinario = funcionarioRepository.findById(dto.getVeterinarioId())
                 .orElseThrow(() -> new EntityNotFoundException("Veterinário não encontrado com o ID: " + dto.getVeterinarioId()));
 
@@ -58,7 +41,6 @@ public class ServicoServiceImplement implements ServicoService {
 
         Servico novoServico = modelMapper.map(dto, Servico.class);
 
-        // Garantia explícita de que é um novo registro
         novoServico.setId(null);
 
         novoServico.setVeterinario(veterinario);
@@ -69,33 +51,25 @@ public class ServicoServiceImplement implements ServicoService {
     }
 
     @Transactional
-    public ServicoResponseDTO atualizarServico(Long id, ServicoRequestDTO dto) {
+    public ServicoResponseDTO atualizar(Long id, ServicoRequestDTO dto) {
         Servico servicoExistente = servicoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado para atualização com o ID: " + id));
 
         Funcionario veterinario = funcionarioRepository.findById(dto.getVeterinarioId())
                 .orElseThrow(() -> new EntityNotFoundException("Veterinário não encontrado com o ID: " + dto.getVeterinarioId()));
 
-        // Valida se o funcionário informado é um veterinário
         if (veterinario.getCargo() == null || veterinario.getCargo().getCargo() != EnumCargo.VETERINARIO) {
             throw new IllegalArgumentException("O funcionário com ID " + veterinario.getId() + " não é um veterinário.");
         }
 
-        modelMapper.map(dto, servicoExistente); // Mapeia os campos simples
-        servicoExistente.setVeterinario(veterinario); // Reassocia o veterinário
-        servicoExistente.setId(id); // Garante que o ID não seja alterado
+        modelMapper.map(dto, servicoExistente);
+        servicoExistente.setVeterinario(veterinario);
+        servicoExistente.setId(id);
 
         Servico servicoAtualizado = servicoRepository.save(servicoExistente);
         return mapEntidadeParaResponseDTO(servicoAtualizado);
     }
 
-    @Transactional
-    public void deletarServico(Long id) {
-        if (!servicoRepository.existsById(id)) {
-            throw new EntityNotFoundException("Serviço não encontrado para deleção com o ID: " + id);
-        }
-        servicoRepository.deleteById(id);
-    }
 
     // Método helper privado para centralizar o mapeamento para o ResponseDTO
     private ServicoResponseDTO mapEntidadeParaResponseDTO(Servico servico) {

@@ -2,17 +2,14 @@ package br.com.clinicavet.clinica_api.service.Interface;
 
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioResponseDTO;
+import br.com.clinicavet.clinica_api.model.RegistroProntuario;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface RegistroProntuarioServiceInterface {
+public interface RegistroProntuarioService extends BaseService<RegistroProntuario, Long, RegistroProntuarioRequestDTO, RegistroProntuarioResponseDTO> {
     
-    RegistroProntuarioResponseDTO criarRegistro(RegistroProntuarioRequestDTO registroRequestDTO);
-    
-    void deletarRegistro(Long id);
-    
-    RegistroProntuarioResponseDTO buscarPorId(Long id);
+    RegistroProntuarioResponseDTO criar(RegistroProntuarioRequestDTO registroRequestDTO);
     
     List<RegistroProntuarioResponseDTO> buscarPorProntuarioId(Long prontuarioId);
     
@@ -21,10 +18,8 @@ public interface RegistroProntuarioServiceInterface {
     List<RegistroProntuarioResponseDTO> buscarPorInternacaoId(Long internacaoId);
     
     List<RegistroProntuarioResponseDTO> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
-    
-    List<RegistroProntuarioResponseDTO> listarTodos();
-    
+
     RegistroProntuarioResponseDTO buscarPorIdComMedicamentos(Long id);
 
-    RegistroProntuarioResponseDTO atualizarRegistro(Long id, RegistroProntuarioRequestDTO registroRequestDTO);
+    RegistroProntuarioResponseDTO atualizar(Long id, RegistroProntuarioRequestDTO registroRequestDTO);
 }

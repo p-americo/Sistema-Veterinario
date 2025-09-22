@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.net.URI;
@@ -24,6 +24,7 @@ public class AnimalController {
 
     private final AnimalService animalService;
     private final ObjectMapper objectMapper;
+
 
     @Autowired
     public AnimalController(AnimalService animalService, ObjectMapper objectMapper) {
@@ -41,7 +42,7 @@ public class AnimalController {
         AnimalRequestDTO animalRequestDTO = objectMapper.readValue(dadosAnimalJson, AnimalRequestDTO.class);
 
         // 2. Chamada do serviço com os objetos já convertidos e separados
-        AnimalResponseDTO responseDTO = animalService.criarAnimal(animalRequestDTO, arquivoImagem);
+        AnimalResponseDTO responseDTO = animalService.criar(animalRequestDTO, arquivoImagem);
 
         URI uri = uriComponentsBuilder.path("/api/animais/{id}").buildAndExpand(responseDTO.getId()).toUri();
 
@@ -79,14 +80,14 @@ public class AnimalController {
     @PutMapping("/{id}")
     public ResponseEntity<AnimalResponseDTO> atualizarAnimal(@PathVariable long id, @RequestBody AnimalRequestDTO animalDTO) {
 
-        AnimalResponseDTO responseDTO = animalService.atualizarAnimal(id, animalDTO);
+        AnimalResponseDTO responseDTO = animalService.atualizar(id, animalDTO);
         return ResponseEntity.ok().body(responseDTO);
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarAnimal(@PathVariable long id) {
-        animalService.deletarAnimal(id);
+        animalService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

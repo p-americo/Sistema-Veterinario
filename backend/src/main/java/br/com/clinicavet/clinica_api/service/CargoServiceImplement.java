@@ -9,27 +9,26 @@ import br.com.clinicavet.clinica_api.service.Interface.CargoService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+
 
 @Service
-public class CargoServiceImplement implements CargoService {
+public class CargoServiceImplement extends BaseServiceImplement<Cargo, Long, CargoRequestDTO, CargoResponseDTO> implements CargoService {
 
     private final CargoRepository cargoRepository;
     private final FuncionarioRepository funcionarioRepository;
     private final ModelMapper modelMapper;
 
     public CargoServiceImplement(CargoRepository cargoRepository, FuncionarioRepository funcionarioRepository, ModelMapper modelMapper) {
+        super(cargoRepository, modelMapper);
         this.cargoRepository = cargoRepository;
         this.funcionarioRepository = funcionarioRepository;
         this.modelMapper = modelMapper;
     }
 
+    @Override
     @Transactional
-    public CargoResponseDTO criarCargo(CargoRequestDTO requestDTO) {
-        // Validação de negócio: não permitir criar um cargo que já existe
+    public CargoResponseDTO criar(CargoRequestDTO requestDTO) {
         cargoRepository.findByCargo(requestDTO.getCargo())
                 .ifPresent(cargo -> {
                     throw new IllegalArgumentException("Este tipo de cargo já existe.");
@@ -40,22 +39,9 @@ public class CargoServiceImplement implements CargoService {
         return modelMapper.map(cargoSalvo, CargoResponseDTO.class);
     }
 
-    @Transactional(readOnly = true)
-    public List<CargoResponseDTO> listarTodos() {
-        return cargoRepository.findAll().stream()
-                .map(cargo -> modelMapper.map(cargo, CargoResponseDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public CargoResponseDTO buscarPorId(Long id) {
-        Cargo cargo = cargoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Cargo não encontrado com o ID: " + id));
-        return modelMapper.map(cargo, CargoResponseDTO.class);
-    }
-
+    @Override
     @Transactional
-    public CargoResponseDTO atualizarCargo(Long id, CargoRequestDTO requestDTO) {
+    public CargoResponseDTO atualizar(Long id, CargoRequestDTO requestDTO) {
         Cargo cargoExistente = cargoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Cargo não encontrado para atualização com o ID: " + id));
 
@@ -73,9 +59,9 @@ public class CargoServiceImplement implements CargoService {
         Cargo cargoAtualizado = cargoRepository.save(cargoExistente);
         return modelMapper.map(cargoAtualizado, CargoResponseDTO.class);
     }
-
+    @Override
     @Transactional
-    public void deletarCargo(Long id) {
+    public void deletar(Long id) {
         if (!cargoRepository.existsById(id)) {
             throw new NoSuchElementException("Cargo não encontrado para deleção com o ID: " + id);
         }

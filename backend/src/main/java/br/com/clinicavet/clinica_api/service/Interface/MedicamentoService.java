@@ -2,19 +2,14 @@ package br.com.clinicavet.clinica_api.service.Interface;
 
 import br.com.clinicavet.clinica_api.dto.MedicamentoRequestDTO;
 import br.com.clinicavet.clinica_api.dto.MedicamentoResponseDTO;
+import br.com.clinicavet.clinica_api.model.Medicamento;
 
-import java.util.List;
 
 
-public interface MedicamentoService {
+public interface MedicamentoService extends BaseService<Medicamento, Long, MedicamentoRequestDTO, MedicamentoResponseDTO> {
 
-    MedicamentoResponseDTO criarMedicamento(MedicamentoRequestDTO medicamentoRequestDTO);
+    MedicamentoResponseDTO criar(MedicamentoRequestDTO medicamentoRequestDTO);
 
-    MedicamentoResponseDTO atualizarMedicamento(Long id, MedicamentoRequestDTO medicamentoRequestDTO);
+    MedicamentoResponseDTO atualizar(Long id, MedicamentoRequestDTO medicamentoRequestDTO);
 
-    void deletarMedicamento(Long id);
-
-    MedicamentoResponseDTO buscarPorId(Long id);
-
-    List<MedicamentoResponseDTO> listarTodos();
 }

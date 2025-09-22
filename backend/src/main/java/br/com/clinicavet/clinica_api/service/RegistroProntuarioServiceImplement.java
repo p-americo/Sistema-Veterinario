@@ -5,7 +5,7 @@ import br.com.clinicavet.clinica_api.dto.RegistroProntuarioRequestDTO;
 import br.com.clinicavet.clinica_api.dto.RegistroProntuarioResponseDTO;
 import br.com.clinicavet.clinica_api.model.*;
 import br.com.clinicavet.clinica_api.repository.*;
-import br.com.clinicavet.clinica_api.service.Interface.RegistroProntuarioServiceInterface;
+import br.com.clinicavet.clinica_api.service.Interface.RegistroProntuarioService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class RegistroProntuarioServiceImplement implements RegistroProntuarioServiceInterface {
+public class RegistroProntuarioServiceImplement extends BaseServiceImplement<RegistroProntuario, Long, RegistroProntuarioRequestDTO, RegistroProntuarioResponseDTO> implements RegistroProntuarioService {
 
     private final RegistroProntuarioRepository registroProntuarioRepository;
     private final ProntuarioRepository prontuarioRepository;
@@ -26,6 +26,7 @@ public class RegistroProntuarioServiceImplement implements RegistroProntuarioSer
     private final ModelMapper modelMapper;
 
     public RegistroProntuarioServiceImplement(RegistroProntuarioRepository registroProntuarioRepository, ProntuarioRepository prontuarioRepository, FuncionarioRepository funcionarioRepository, AgendamentoRepository agendamentoRepository, InternacaoRepository internacaoRepository, ModelMapper modelMapper) {
+        super(registroProntuarioRepository, modelMapper);
         this.registroProntuarioRepository = registroProntuarioRepository;
         this.prontuarioRepository = prontuarioRepository;
         this.funcionarioRepository = funcionarioRepository;
@@ -36,7 +37,7 @@ public class RegistroProntuarioServiceImplement implements RegistroProntuarioSer
 
     @Override
     @Transactional
-    public RegistroProntuarioResponseDTO criarRegistro(RegistroProntuarioRequestDTO registroRequestDTO) {
+    public RegistroProntuarioResponseDTO criar(RegistroProntuarioRequestDTO registroRequestDTO) {
         Prontuario prontuario = prontuarioRepository.findById(registroRequestDTO.getProntuarioId())
                 .orElseThrow(() -> new NoSuchElementException("Prontuário não encontrado com o ID: " + registroRequestDTO.getProntuarioId()));
 
@@ -49,7 +50,6 @@ public class RegistroProntuarioServiceImplement implements RegistroProntuarioSer
         novoRegistro.setPesoNoDia(registroRequestDTO.getPesoNoDia());
         novoRegistro.setObservacoesClinicas(registroRequestDTO.getObservacoesClinicas());
         novoRegistro.setDiagnostico(registroRequestDTO.getDiagnostico());
-        // --- FIM DA CORREÇÃO ---
 
         novoRegistro.setProntuario(prontuario);
         novoRegistro.setVeterinarioResponsavel(veterinario);
@@ -73,7 +73,7 @@ public class RegistroProntuarioServiceImplement implements RegistroProntuarioSer
 
     @Override
     @Transactional
-    public RegistroProntuarioResponseDTO atualizarRegistro(Long id, RegistroProntuarioRequestDTO registroRequestDTO) {
+    public RegistroProntuarioResponseDTO atualizar(Long id, RegistroProntuarioRequestDTO registroRequestDTO) {
         RegistroProntuario registroExistente = registroProntuarioRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Registro do prontuário não encontrado com o ID: " + id));
 
@@ -101,21 +101,6 @@ public class RegistroProntuarioServiceImplement implements RegistroProntuarioSer
         return mapEntidadeParaResponse(registroAtualizado);
     }
 
-    @Override
-    @Transactional
-    public void deletarRegistro(Long id) {
-        if (!registroProntuarioRepository.existsById(id)) {
-            throw new NoSuchElementException("Registro do prontuário não encontrado com o ID: " + id);
-        }
-        registroProntuarioRepository.deleteById(id);
-    }
-
-    @Override
-    public RegistroProntuarioResponseDTO buscarPorId(Long id) {
-        RegistroProntuario registro = registroProntuarioRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Registro do prontuário não encontrado com o ID: " + id));
-        return mapEntidadeParaResponse(registro);
-    }
 
     @Override
     public List<RegistroProntuarioResponseDTO> buscarPorProntuarioId(Long prontuarioId) {
@@ -145,12 +130,6 @@ public class RegistroProntuarioServiceImplement implements RegistroProntuarioSer
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<RegistroProntuarioResponseDTO> listarTodos() {
-        return registroProntuarioRepository.findAll().stream()
-                .map(this::mapEntidadeParaResponse)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public RegistroProntuarioResponseDTO buscarPorIdComMedicamentos(Long id) {
