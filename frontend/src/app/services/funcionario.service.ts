@@ -5,13 +5,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FuncionarioRequest, FuncionarioResponse, FuncionarioUpdate } from '../models/funcionario.model';
 import { Cargo } from '../models/funcionario.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FuncionarioService {
-  private apiUrl = 'http://localhost:8080/api/funcionarios'; // <-- URL ATUALIZADA
-  private cargoApiUrl = 'http://localhost:8080/api/cargos';
+  private apiUrl = `${environment.apiUrl}/api/funcionarios`;
+  private cargoApiUrl = `${environment.apiUrl}/api/cargos`;
 
   constructor(private http: HttpClient) { }
 

@@ -31,16 +31,33 @@ Para rodar o projeto completo, você precisará executar tanto o back-end quanto
 - **Java 17+** e **Maven**
 - **Node.js 18+** e **NPM**
 - **Angular CLI** (`npm install -g @angular/cli`)
+- **Docker** e **Docker Compose** (para rodar o PostgreSQL localmente)
 
-### 2. Rodando o Backend (API)
+### 2. Iniciando o Banco de Dados (PostgreSQL via Docker)
+
+Por padrão, a aplicação está configurada para conectar a um banco de dados PostgreSQL (perfil `prod`). Para subir o banco via Docker:
+
+1. Na raiz do projeto, faça uma cópia do arquivo `.env.example` nomeando-a como `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. O arquivo `.env` está configurado no `.gitignore` para que você possa colocar suas próprias credenciais locais (como portas ou senhas) com privacidade.
+3. Suba o banco de dados usando o comando:
+   ```bash
+   docker compose up -d
+   ```
+4. O contêiner do PostgreSQL ficará rodando em segundo plano e exposto na porta configurada no seu `.env` (padrão: `5432`).
+
+### 3. Rodando o Backend (API)
 
 1.  Abra a pasta `backend/` no seu IntelliJ IDEA (ou outra IDE Java).
 2.  Aguarde o Maven baixar todas as dependências.
-3.  A API utiliza um banco de dados H2 em memória por padrão para desenvolvimento, então nenhuma configuração adicional é necessária.
-4.  Execute a classe principal `ClinicaApiApplication.java`.
+3.  Execute a classe principal `ClinicaApiApplication.java` ou rode via linha de comando com `./mvnw spring-boot:run` (iniciará com perfil `prod` usando o banco Docker).
+4.  Caso prefira usar o banco em memória H2 (sem precisar do Docker/PostgreSQL), altere a propriedade `spring.profiles.active=dev` no `application.properties` ou execute `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev`.
 5.  A API estará disponível em `http://localhost:8080`.
 6.  Crie um cliente ou Funcionario pelo Swagger e o use para fazer o login no front
-### 3. Rodando o Frontend (Aplicação Web)
+
+### 4. Rodando o Frontend (Aplicação Web)
 
 1.  Abra a pasta `frontend/` no seu Visual Studio Code (ou outro editor de código).
 2.  Abra um terminal dentro desta pasta.

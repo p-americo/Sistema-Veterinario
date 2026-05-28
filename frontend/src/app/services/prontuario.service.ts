@@ -2,16 +2,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ProntuarioRequest, ProntuarioResponse, RegistroProntuarioRequest } from '../models/prontuario.model';
+import { ProntuarioRequest, ProntuarioResponse, RegistroProntuarioRequest, RegistroProntuarioResponse } from '../models/prontuario.model';
 import { AnimalResponse } from '../models/animal.model';
 import { FuncionarioResponse } from '../models/funcionario.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ProntuarioService {
-  private apiUrl = 'http://localhost:8080/api/prontuarios';
-  private registrosApiUrl = 'http://localhost:8080/api/registros-prontuario'; // URL para os registros
-  private animaisUrl = 'http://localhost:8080/api/animais';
-  private veterinariosUrl = 'http://localhost:8080/api/funcionarios/veterinarios';
+  private apiUrl = `${environment.apiUrl}/api/prontuarios`;
+  private registrosApiUrl = `${environment.apiUrl}/api/registros-prontuario`; // URL para os registros
+  private animaisUrl = `${environment.apiUrl}/api/animais`;
+  private veterinariosUrl = `${environment.apiUrl}/api/funcionarios/veterinarios`;
 
   constructor(private http: HttpClient) { }
 
@@ -35,11 +36,11 @@ export class ProntuarioService {
   }
 
 
-  createRegistroProntuario(registro: RegistroProntuarioRequest): Observable<ProntuarioResponse> {
-    return this.http.post<ProntuarioResponse>(this.registrosApiUrl, registro);
+  createRegistroProntuario(registro: RegistroProntuarioRequest): Observable<RegistroProntuarioResponse> {
+    return this.http.post<RegistroProntuarioResponse>(this.registrosApiUrl, registro);
   }
-  updateRegistroProntuario(id: number, registro: RegistroProntuarioRequest): Observable<ProntuarioResponse> {
-    return this.http.put<ProntuarioResponse>(`${this.registrosApiUrl}/${id}`, registro);
+  updateRegistroProntuario(id: number, registro: RegistroProntuarioRequest): Observable<RegistroProntuarioResponse> {
+    return this.http.put<RegistroProntuarioResponse>(`${this.registrosApiUrl}/${id}`, registro);
   }
   deleteRegistroProntuario(id: number): Observable<void> {
     return this.http.delete<void>(`${this.registrosApiUrl}/${id}`);

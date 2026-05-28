@@ -199,3 +199,11 @@ README.html
 *.iml
 .idea
 .exercism
+
+# Antigravity and Claude
+.antigravity/
+.antigravitycli/
+.claude/
+
+# Local Environment Variables
+.env

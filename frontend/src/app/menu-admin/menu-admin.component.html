@@ -1,10 +1,15 @@
 <div class="admin-container">
   <header class="main-header">
-    <div class="logo-container"> <img class="logo-image" src="assets/images/logo.png" alt="VetManager Logo"> </div>
+    <div class="logo-container">
+      <img class="logo-image" src="assets/images/logo.png" alt="VetManager Logo">
+    </div>
     <nav class="main-nav">
       <button class="nav-button" [class.active]="abaAtiva === 'prontuario'" (click)="selecionarAba('prontuario')"> Prontuário </button>
-      <button class="nav-button" [class.active]="abaAtiva === 'cadastros'" (click)="selecionarAba('cadastros')"> Cadastros </button>
+      <button *ngIf="isManager()" class="nav-button" [class.active]="abaAtiva === 'cadastros'" (click)="selecionarAba('cadastros')"> Cadastros </button>
     </nav>
+    <div class="logout-container">
+      <button class="logout-button" (click)="logout()" title="Sair do sistema">Sair →</button>
+    </div>
   </header>
 
   <main class="main-content" *ngIf="abaAtiva === 'prontuario'">
@@ -157,7 +162,7 @@
       </ng-template>
     </section>
   </main>
-  <main class="main-content" *ngIf="abaAtiva === 'cadastros'">
+  <main class="main-content" *ngIf="abaAtiva === 'cadastros' && isManager()">
     <ng-container [ngSwitch]="telaCadastroAtiva">
       <app-cadastro-funcionario *ngSwitchCase="'funcionario'" (voltar)="voltarParaSelecaoDeCadastro()"></app-cadastro-funcionario>
       <app-cadastro-servico *ngSwitchCase="'servico'" (voltar)="voltarParaSelecaoDeCadastro()"></app-cadastro-servico>

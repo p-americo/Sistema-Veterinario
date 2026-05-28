@@ -6,10 +6,11 @@ import { AgendamentoRequest, AgendamentoResponse } from '../models/agendamento.m
 import { ClienteResponse } from '../models/cliente.model';
 import { AnimalResponse } from '../models/animal.model';
 import { ServicoResponse } from '../models/servico.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AgendamentoService {
-  private apiUrl = 'http://localhost:8080/api/agendamentos';
+  private apiUrl = `${environment.apiUrl}/api/agendamentos`;
 
   constructor(private http: HttpClient) { }
 
@@ -29,16 +30,16 @@ export class AgendamentoService {
 
 
   getClientes(): Observable<ClienteResponse[]> {
-    return this.http.get<ClienteResponse[]>('http://localhost:8080/api/clientes');
+    return this.http.get<ClienteResponse[]>(`${environment.apiUrl}/api/clientes`);
   }
   getAnimais(): Observable<AnimalResponse[]> {
-    return this.http.get<AnimalResponse[]>('http://localhost:8080/api/animais');
+    return this.http.get<AnimalResponse[]>(`${environment.apiUrl}/api/animais`);
   }
   getServicos(): Observable<ServicoResponse[]> {
 
-    return this.http.get<ServicoResponse[]>('http://localhost:8080/api/servicos');
+    return this.http.get<ServicoResponse[]>(`${environment.apiUrl}/api/servicos`);
   }
   getAgendamentoStatus(): Observable<string[]> {
-    return this.http.get<string[]>('http://localhost:8080/api/enums/agendamento-status');
+    return this.http.get<string[]>(`${environment.apiUrl}/api/enums/agendamento-status`);
   }
 }

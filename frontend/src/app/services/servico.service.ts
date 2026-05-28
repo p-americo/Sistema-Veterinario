@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ServicoRequest, ServicoResponse } from '../models/servico.model';
 import { FuncionarioResponse } from '../models/funcionario.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ServicoService {
-  private apiUrl = 'http://localhost:8080/api/servicos';
+  private apiUrl = `${environment.apiUrl}/api/servicos`;
 
   constructor(private http: HttpClient) { }
 
@@ -26,9 +27,9 @@ export class ServicoService {
 
 
   getServicoTipos(): Observable<string[]> {
-    return this.http.get<string[]>('http://localhost:8080/api/enums/servico-tipos');
+    return this.http.get<string[]>(`${environment.apiUrl}/api/enums/servico-tipos`);
   }
   getVeterinarios(): Observable<FuncionarioResponse[]> {
-    return this.http.get<FuncionarioResponse[]>('http://localhost:8080/api/funcionarios/veterinarios');
+    return this.http.get<FuncionarioResponse[]>(`${environment.apiUrl}/api/funcionarios/veterinarios`);
   }
 }

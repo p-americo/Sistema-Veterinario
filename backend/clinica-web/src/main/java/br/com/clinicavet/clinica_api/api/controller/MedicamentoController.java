@@ -1,0 +1,62 @@
+package br.com.clinicavet.clinica_api.api.controller;
+
+import br.com.clinicavet.clinica_api.application.dto.MedicamentoRequestDTO;
+import br.com.clinicavet.clinica_api.application.dto.MedicamentoResponseDTO;
+import br.com.clinicavet.clinica_api.application.service.MedicamentoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import java.net.URI;
+
+@Tag(name = "Medicamentos", description = "Gerenciamento de medicamentos")
+@RestController
+@RequestMapping("/api/medicamentos")
+public class MedicamentoController {
+
+    private final MedicamentoService medicamentoService;
+
+    @Autowired
+    public MedicamentoController(MedicamentoService medicamentoService) {
+        this.medicamentoService = medicamentoService;
+    }
+
+    @PostMapping
+    public ResponseEntity<MedicamentoResponseDTO> criarMedicamento(@RequestBody @Valid MedicamentoRequestDTO medicamentoRequestDTO,
+                                                                   UriComponentsBuilder uriComponentsBuilder) {
+        MedicamentoResponseDTO responseDTO = medicamentoService.criar(medicamentoRequestDTO);
+        URI uri = uriComponentsBuilder.path("/api/medicamentos/{id}").buildAndExpand(responseDTO.getId()).toUri();
+        return ResponseEntity.created(uri).body(responseDTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<MedicamentoResponseDTO>> listarTodosMedicamentos(@PageableDefault(size = 10) Pageable pageable) {
+        Page<MedicamentoResponseDTO> listaMedicamentos = medicamentoService.listarTodos(pageable);
+        return ResponseEntity.ok(listaMedicamentos);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MedicamentoResponseDTO> buscarMedicamentoPorId(@PathVariable Long id) {
+        MedicamentoResponseDTO responseDTO = medicamentoService.buscarPorId(id);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MedicamentoResponseDTO> atualizarMedicamento(@PathVariable Long id,
+                                                                       @RequestBody @Valid MedicamentoRequestDTO medicamentoRequestDTO) {
+        MedicamentoResponseDTO responseDTO = medicamentoService.atualizar(id, medicamentoRequestDTO);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarMedicamento(@PathVariable Long id) {
+        medicamentoService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+}

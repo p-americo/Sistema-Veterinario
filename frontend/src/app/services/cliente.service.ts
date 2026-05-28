@@ -2,18 +2,23 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ClienteRequest, ClienteResponse, ClienteUpdate } from '../models/cliente.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClienteService {
-  private apiUrl = 'http://localhost:8080/api/clientes';
+  private apiUrl = `${environment.apiUrl}/api/clientes`;
 
   constructor(private http: HttpClient) { }
 
 
   getClientes(): Observable<ClienteResponse[]> {
     return this.http.get<ClienteResponse[]>(this.apiUrl);
+  }
+
+  getClienteLogado(): Observable<ClienteResponse> {
+    return this.http.get<ClienteResponse>(`${this.apiUrl}/me`);
   }
 
 

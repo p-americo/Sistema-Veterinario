@@ -1,0 +1,93 @@
+package br.com.clinicavet.clinica_api.api.controller;
+
+import br.com.clinicavet.clinica_api.application.dto.AdministracaoMedicamentoRequestDTO;
+import br.com.clinicavet.clinica_api.application.dto.AdministracaoMedicamentoResponseDTO;
+import br.com.clinicavet.clinica_api.application.service.AdminstracaoMedicamentoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Tag(name = "Administração de Medicamentos", description = "Operações de administração de medicamentos aos animais internados")
+@RestController
+@RequestMapping("/api/administracoes-medicamento")
+public class AdministracaoMedicamentoController {
+
+    private final AdminstracaoMedicamentoService administracaoMedicamentoService;
+
+    @Autowired
+    public AdministracaoMedicamentoController(AdminstracaoMedicamentoService administracaoMedicamentoService) {
+        this.administracaoMedicamentoService = administracaoMedicamentoService;
+    }
+
+    @PostMapping
+    public ResponseEntity<AdministracaoMedicamentoResponseDTO> criarAdministracao(@RequestBody @Valid AdministracaoMedicamentoRequestDTO administracaoRequestDTO,
+                                                                                 UriComponentsBuilder uriComponentsBuilder) {
+        AdministracaoMedicamentoResponseDTO responseDTO = administracaoMedicamentoService.criar(administracaoRequestDTO);
+
+        URI uri = uriComponentsBuilder.path("/api/administracoes-medicamento/{id}").buildAndExpand(responseDTO.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(responseDTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<AdministracaoMedicamentoResponseDTO>> buscarTodasAdministracoes(@PageableDefault(size = 10) Pageable pageable) {
+        Page<AdministracaoMedicamentoResponseDTO> listaAdministracoes = administracaoMedicamentoService.listarTodos(pageable);
+        return ResponseEntity.ok(listaAdministracoes);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AdministracaoMedicamentoResponseDTO> buscarAdministracaoPorId(@PathVariable Long id) {
+        AdministracaoMedicamentoResponseDTO responseDTO = administracaoMedicamentoService.buscarPorId(id);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @GetMapping("/entrada-prontuario/{entradaProntuarioId}")
+    public ResponseEntity<List<AdministracaoMedicamentoResponseDTO>> buscarAdministracoesPorEntradaProntuario(@PathVariable Long entradaProntuarioId) {
+        List<AdministracaoMedicamentoResponseDTO> listaAdministracoes = administracaoMedicamentoService.buscarPorEntradaProntuarioId(entradaProntuarioId);
+        return ResponseEntity.ok(listaAdministracoes);
+    }
+
+    @GetMapping("/medicamento/{medicamentoId}")
+    public ResponseEntity<List<AdministracaoMedicamentoResponseDTO>> buscarAdministracoesPorMedicamento(@PathVariable Long medicamentoId) {
+        List<AdministracaoMedicamentoResponseDTO> listaAdministracoes = administracaoMedicamentoService.buscarPorMedicamentoId(medicamentoId);
+        return ResponseEntity.ok(listaAdministracoes);
+    }
+
+    @GetMapping("/funcionario/{funcionarioId}")
+    public ResponseEntity<List<AdministracaoMedicamentoResponseDTO>> buscarAdministracoesPorFuncionario(@PathVariable Long funcionarioId) {
+        List<AdministracaoMedicamentoResponseDTO> listaAdministracoes = administracaoMedicamentoService.buscarPorFuncionarioId(funcionarioId);
+        return ResponseEntity.ok(listaAdministracoes);
+    }
+
+    @GetMapping("/periodo")
+    public ResponseEntity<List<AdministracaoMedicamentoResponseDTO>> buscarAdministracoesPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
+        List<AdministracaoMedicamentoResponseDTO> listaAdministracoes = administracaoMedicamentoService.buscarPorPeriodo(inicio, fim);
+        return ResponseEntity.ok(listaAdministracoes);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AdministracaoMedicamentoResponseDTO> atualizarAdministracao(@PathVariable Long id,
+                                                                                     @RequestBody AdministracaoMedicamentoRequestDTO administracaoRequestDTO) {
+        AdministracaoMedicamentoResponseDTO responseDTO = administracaoMedicamentoService.atualizar(id, administracaoRequestDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarAdministracao(@PathVariable Long id) {
+        administracaoMedicamentoService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+}

@@ -1,99 +1,159 @@
 <div class="form-container-com-voltar">
   <div class="form-header">
     <button class="btn-voltar" (click)="voltarParaMenu()" title="Voltar ao menu anterior">
-      &#8592; Voltar
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="arrow-back">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Voltar</span>
     </button>
   </div>
 
   <div class="agendamento-container">
-    <div *ngIf="mensagemSucesso" class="alert alert-success">{{ mensagemSucesso }}</div>
-    <div *ngIf="mensagemErro" class="alert alert-danger">{{ mensagemErro }}</div>
+    <!-- Toasts de Feedback -->
+    <div *ngIf="mensagemSucesso" class="toast success-toast">
+      <div class="toast-icon">✓</div>
+      <span>{{ mensagemSucesso }}</span>
+    </div>
+    <div *ngIf="mensagemErro" class="toast error-toast">
+      <div class="toast-icon">⚠</div>
+      <span>{{ mensagemErro }}</span>
+    </div>
 
     <div class="coluna-esquerda">
       <div class="card pet-selector">
-        <h3>1. Selecione o Animal</h3>
-        <label for="pet-select">Qual pet será atendido?</label>
-        <select id="pet-select" (change)="onPetSelecionado($event)" [disabled]="isLoading">
-          <option value="">Selecione um animal</option>
-          <option *ngFor="let pet of petsDoCliente" [value]="pet.id">
-            {{ pet.nome }}
-          </option>
-        </select>
+        <div class="step-badge">1</div>
+        <h3>Selecione o Animal</h3>
+        <div class="form-group-custom">
+          <label for="pet-select">Qual pet será atendido?</label>
+          <div class="select-wrapper">
+            <select id="pet-select" (change)="onPetSelecionado($event)" [disabled]="isLoading">
+              <option value="">Selecione um animal</option>
+              <option *ngFor="let pet of petsDoCliente" [value]="pet.id">
+                {{ pet.nome }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div class="card servico-selector">
-        <h3>2. Selecione o Serviço</h3>
-        <label for="servico-select">Qual serviço será realizado?</label>
-        <select id="servico-select" [(ngModel)]="servicoSelecionadoId" [disabled]="isLoading">
-          <option [ngValue]="null" disabled>Selecione um serviço</option>
-          <option *ngFor="let servico of servicos" [value]="servico.id">
-            {{ servico.tipo }}
-          </option>
-        </select>
+        <div class="step-badge">2</div>
+        <h3>Selecione o Serviço</h3>
+        <div class="form-group-custom">
+          <label for="servico-select">Qual serviço será realizado?</label>
+          <div class="select-wrapper">
+            <select id="servico-select" [(ngModel)]="servicoSelecionadoId" [disabled]="isLoading">
+              <option [ngValue]="null" disabled>Selecione um serviço</option>
+              <option *ngFor="let servico of servicos" [value]="servico.id">
+                {{ servico.tipo }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div class="card calendar-card">
-        <h3>3. Selecione a Data</h3>
-        <div class="calendar-header">
-          <button (click)="mesAnterior()" [disabled]="isLoading">&#8249;</button>
-          <h3>{{ mesAtual | date:'MMMM yyyy' }}</h3>
-          <button (click)="proximoMes()" [disabled]="isLoading">&#8250;</button>
-        </div>
-        <div class="calendar-grid">
-          <div class="day-name" *ngFor="let dia of diasDaSemana">{{ dia }}</div>
-          <div class="day" *ngFor="let dia of diasDoMes"
-               [class.other-month]="dia.outroMes"
-               [class.past-day]="isDiaPassado(dia.data) && !dia.outroMes"
-               [class.selected]="isDiaSelecionado(dia.data)"
-               (click)="!isLoading && !dia.outroMes && !isDiaPassado(dia.data) && selecionarDia(dia.data)">
-            {{ dia.data | date:'d' }}
+        <div class="step-badge">3</div>
+        <h3>Selecione a Data</h3>
+        
+        <div class="calendar-wrapper">
+          <div class="calendar-header">
+            <button (click)="mesAnterior()" [disabled]="isLoading" class="btn-calendar-nav" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <h4 class="current-month">{{ mesAtual | date:'MMMM yyyy' }}</h4>
+            <button (click)="proximoMes()" [disabled]="isLoading" class="btn-calendar-nav" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="calendar-grid">
+            <div class="day-name" *ngFor="let dia of diasDaSemana">{{ dia }}</div>
+            <div class="day" *ngFor="let dia of diasDoMes"
+                 [class.other-month]="dia.outroMes"
+                 [class.past-day]="isDiaPassado(dia.data) && !dia.outroMes"
+                 [class.selected]="isDiaSelecionado(dia.data)"
+                 (click)="!isLoading && !dia.outroMes && !isDiaPassado(dia.data) && selecionarDia(dia.data)">
+              <span>{{ dia.data | date:'d' }}</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="coluna-direita">
+      <!-- Pet Info Card (Bio Card) -->
       <div class="card pet-info-card">
-        <div class="pet-image-placeholder">
-          <img *ngIf="imagemPetUrl" [src]="imagemPetUrl" alt="Foto de {{ petSelecionado?.nome }}">
-          <span *ngIf="!imagemPetUrl">🐾</span>
+        <div class="pet-avatar-wrapper">
+          <div class="pet-avatar-placeholder">
+            <img *ngIf="imagemPetUrl" [src]="imagemPetUrl" alt="Foto de {{ petSelecionado?.nome }}">
+            <span *ngIf="!imagemPetUrl">🐾</span>
+          </div>
         </div>
-        <h3 *ngIf="!petSelecionado">Pet Cadastrado</h3>
-        <h3 *ngIf="petSelecionado">{{ petSelecionado?.nome }}</h3>
-        <div *ngIf="petSelecionado; else infoPadrao">
-          <p><b>Espécie/Raça:</b> {{ petSelecionado?.especie }} / {{ petSelecionado?.raca }}</p>
-          <p><b>Sexo:</b> {{ petSelecionado?.sexo }}</p>
-          <p><b>Idade:</b> {{ calcularIdade(petSelecionado?.dataNascimento || '') }} anos</p>
+        <h3 class="pet-info-name">{{ petSelecionado ? petSelecionado.nome : 'Selecione um Pet' }}</h3>
+        
+        <div class="pet-bio-grid">
+          <div class="bio-item">
+            <span class="bio-label">Espécie</span>
+            <span class="bio-value">{{ petSelecionado ? petSelecionado.especie : '-' }}</span>
+          </div>
+          <div class="bio-item">
+            <span class="bio-label">Raça</span>
+            <span class="bio-value">{{ petSelecionado ? petSelecionado.raca : '-' }}</span>
+          </div>
+          <div class="bio-item">
+            <span class="bio-label">Sexo</span>
+            <span class="bio-value">{{ petSelecionado ? petSelecionado.sexo : '-' }}</span>
+          </div>
+          <div class="bio-item">
+            <span class="bio-label">Idade</span>
+            <span class="bio-value">{{ petSelecionado ? (calcularIdade(petSelecionado.dataNascimento) + ' anos') : '-' }}</span>
+          </div>
         </div>
-        <ng-template #infoPadrao>
-          <p><b>Espécie/Raça:</b> -</p>
-          <p><b>Sexo:</b> -</p>
-          <p><b>Idade:</b> -</p>
-        </ng-template>
       </div>
 
+      <!-- Horários & Lembretes -->
       <div class="horarios-lembretes-container">
         <div class="card horarios-card">
-          <h3>4. Horário</h3>
+          <div class="step-badge">4</div>
+          <h3>Horários Disponíveis</h3>
           <div class="horarios-grid">
             <button *ngFor="let horario of horariosDisponiveis"
                     class="horario-btn"
                     [class.selected]="horario === horarioSelecionado"
-                    (click)="!isLoading && selecionarHorario(horario)">
+                    (click)="!isLoading && selecionarHorario(horario)"
+                    type="button">
               {{ horario }}
             </button>
           </div>
         </div>
+        
         <div class="card lembretes-card">
-          <h3>Lembretes</h3>
-          <ul>
-            <li>Chegue com 10 minutos de antecedência.</li>
-            <li>Traga seu pet com coleira.</li>
+          <h3>Informações Úteis</h3>
+          <ul class="lembretes-list">
+            <li>
+              <span class="bullet-icon">🕒</span>
+              <span>Chegar com 10 minutos de antecedência.</span>
+            </li>
+            <li>
+              <span class="bullet-icon">🐕</span>
+              <span>Trazer o pet na guia ou em caixa de transporte.</span>
+            </li>
+            <li>
+              <span class="bullet-icon">📋</span>
+              <span>Trazer a carteira de vacinação do animal.</span>
+            </li>
           </ul>
         </div>
       </div>
-      <button class="btn-agendar" [disabled]="!isFormularioValido() || isLoading" (click)="confirmarAgendamento()">
-        {{ isLoading ? 'Agendando...' : 'Confirmar Agendamento' }}
+
+      <button class="btn-agendar" [disabled]="!isFormularioValido() || isLoading" (click)="confirmarAgendamento()" type="button">
+        <span>{{ isLoading ? 'Realizando Agendamento...' : 'Confirmar Agendamento' }}</span>
       </button>
     </div>
   </div>

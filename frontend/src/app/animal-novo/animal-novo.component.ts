@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AnimalService } from '../services/animal.service';
 
 @Component({
   selector: 'app-animal-novo',
@@ -12,21 +11,21 @@ import { AnimalService } from '../services/animal.service';
 })
 export class AnimalNovoComponent implements OnInit {
   @Input() clienteId!: number;
-  @Output() petCadastrado = new EventEmitter<void>();
+  @Input() listaEspecies: string[] = [];
+  @Input() listaPortes: string[] = [];
+  @Input() listaSexos: string[] = [];
+  @Input() isLoading = false;
+  @Input() errorMessage: string | null = null;
+  @Input() successMessage: string | null = null;
+
+  @Output() salvar = new EventEmitter<FormData>();
+  @Output() cancelar = new EventEmitter<void>();
 
   animalForm: FormGroup;
-  errorMessage: string | null = null;
-  successMessage: string | null = null;
-
   imagemSelecionada: File | null = null;
   imagemPreview: string | ArrayBuffer | null = null;
 
-
-  listaEspecies: string[] = [];
-  listaPortes: string[] = [];
-  listaSexos: string[] = [];
-
-  constructor(private fb: FormBuilder, private animalService: AnimalService) {
+  constructor(private fb: FormBuilder) {
     this.animalForm = this.fb.group({
       nome: ['', Validators.required],
       especie: [null, Validators.required],
@@ -45,15 +44,7 @@ export class AnimalNovoComponent implements OnInit {
     if (this.clienteId) {
       this.animalForm.patchValue({ clienteId: this.clienteId });
     }
-    this.loadDropdownData();
   }
-
-  loadDropdownData(): void {
-    this.animalService.getEspecies().subscribe(data => this.listaEspecies = data);
-    this.animalService.getPortes().subscribe(data => this.listaPortes = data);
-    this.animalService.getSexos().subscribe(data => this.listaSexos = data);
-  }
-
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -69,13 +60,8 @@ export class AnimalNovoComponent implements OnInit {
     }
   }
 
-
   onSubmit(): void {
-    this.errorMessage = null;
-    this.successMessage = null;
-
-    if (this.animalForm.invalid) {
-      this.errorMessage = 'Por favor, preencha todos os campos obrigatórios.';
+    if (this.animalForm.invalid || this.isLoading) {
       return;
     }
     if (!this.imagemSelecionada) {
@@ -83,9 +69,7 @@ export class AnimalNovoComponent implements OnInit {
       return;
     }
 
-
     const formValues = this.animalForm.value;
-
     const animalDataParaJson = {
       nome: formValues.nome,
       especie: formValues.especie,
@@ -100,25 +84,19 @@ export class AnimalNovoComponent implements OnInit {
     };
 
     const formData = new FormData();
-
     formData.append('dados', new Blob([JSON.stringify(animalDataParaJson)], { type: 'application/json' }));
-
-
     formData.append('imagem', this.imagemSelecionada, this.imagemSelecionada.name);
 
+    this.salvar.emit(formData);
+  }
 
-    this.animalService.createAnimal(formData).subscribe({
-      next: () => {
-        this.successMessage = 'Pet cadastrado com sucesso!';
-        this.animalForm.reset({ castrado: false, clienteId: this.clienteId });
-        this.imagemPreview = null;
-        this.imagemSelecionada = null;
-        setTimeout(() => this.petCadastrado.emit(), 1500);
-      },
-      error: (err) => {
-        this.errorMessage = 'Erro ao cadastrar o pet. Verifique os dados e tente novamente.';
-        console.error(err);
-      }
-    });
+  onCancel(): void {
+    this.cancelar.emit();
+  }
+
+  resetForm(): void {
+    this.animalForm.reset({ castrado: false, clienteId: this.clienteId });
+    this.imagemPreview = null;
+    this.imagemSelecionada = null;
   }
 }

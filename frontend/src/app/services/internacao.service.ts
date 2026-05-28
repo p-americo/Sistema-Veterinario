@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AnimalResponse } from '../models/animal.model';
-import { InternacaoRequest, InternacaoResponse, DiariaRequest, AdministracaoMedicamentoRequest } from '../models/internacao.model';
+import { InternacaoRequest, InternacaoResponse, DiariaRequest, DiariaResponse, AdministracaoMedicamentoRequest, AdministracaoMedicamentoResponse } from '../models/internacao.model';
 import { MedicamentoResponse } from '../models/medicamento.model';
 import { FuncionarioResponse } from '../models/funcionario.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class InternacaoService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) { }
 
@@ -36,12 +37,12 @@ export class InternacaoService {
   }
 
 
-  createDiaria(diaria: DiariaRequest): Observable<InternacaoResponse> {
-    return this.http.post<InternacaoResponse>(`${this.apiUrl}/diarias-internacao`, diaria);
+  createDiaria(diaria: DiariaRequest): Observable<DiariaResponse> {
+    return this.http.post<DiariaResponse>(`${this.apiUrl}/diarias-internacao`, diaria);
   }
 
 
-  createAdministracaoMedicamento(admin: AdministracaoMedicamentoRequest): Observable<InternacaoResponse> {
-    return this.http.post<InternacaoResponse>(`${this.apiUrl}/admin-medicamentos`, admin);
+  createAdministracaoMedicamento(admin: AdministracaoMedicamentoRequest): Observable<AdministracaoMedicamentoResponse> {
+    return this.http.post<AdministracaoMedicamentoResponse>(`${this.apiUrl}/administracoes-medicamento`, admin);
   }
 }

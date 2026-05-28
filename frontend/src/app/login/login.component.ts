@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { LoginCredentials } from '../models/auth.model';
+import { StorageService } from '../services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,7 @@ export class LoginComponent {
 
   private router = inject(Router);
   private authService = inject(AuthService);
+  private storageService = inject(StorageService);
 
   selecionarTipoUsuario(tipo: 'cliente' | 'admin'): void {
     this.tipoUsuarioSelecionado = tipo;
@@ -41,7 +43,7 @@ export class LoginComponent {
     this.authService.login(payload).subscribe({
       next: (response) => {
         // Salva o token para o interceptor usar
-        localStorage.setItem('authToken', response.token);
+        this.storageService.setItem('authToken', response.token);
         // Redireciona após login
         if (this.tipoUsuarioSelecionado === 'admin') {
           this.router.navigate(['/api/admin']);

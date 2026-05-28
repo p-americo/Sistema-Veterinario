@@ -7,31 +7,24 @@
     <nav class="main-nav">
       <button
         class="nav-button"
-        [class.active]="abaAtiva === 'menu'"
+        [class.active]="abaAtiva() === 'menu'"
         (click)="selecionarAba('menu')">
         Menu
       </button>
       <button
         class="nav-button"
-        [class.active]="abaAtiva === 'agendamentos'"
+        [class.active]="abaAtiva() === 'agendamentos'"
         (click)="selecionarAba('agendamentos')">
         Agendamentos
       </button>
     </nav>
     <div class="logout-container">
-      <button class="logout-button">→</button>
+      <button class="logout-button" (click)="logout()" title="Sair do sistema">Sair →</button>
     </div>
   </header>
 
-  <main class="main-content" *ngIf="abaAtiva === 'agendamentos'">
+  <main class="main-content" *ngIf="abaAtiva() === 'agendamentos'">
     <aside class="pet-profile" *ngIf="!exibirFormularioAgendamento && !exibirFormularioCadastroPet">
-      <div class="cliente-selector-side">
-        <label for="cliente-select-side">Cliente Ativo</label>
-        <select id="cliente-select-side" [(ngModel)]="clienteIdSelecionado" (ngModelChange)="onClienteChange($event)">
-          <option [ngValue]="null">Selecione um cliente</option>
-          <option *ngFor="let cliente of clientes" [value]="cliente.id">{{ cliente.nome }}</option>
-        </select>
-      </div>
       <div class="pet-card">
         <div class="pet-image-placeholder">
           <img *ngIf="imagemPetUrl" [src]="imagemPetUrl" alt="Foto de {{ petExibido?.nome }}">
@@ -105,7 +98,18 @@
         </div>
       </section>
       <div class="form-wrapper" *ngIf="exibirFormularioCadastroPet">
-        <app-animal-novo *ngIf="clienteIdSelecionado" [clienteId]="clienteIdSelecionado" (petCadastrado)="onPetCadastrado()"></app-animal-novo>
+        <app-animal-novo
+          *ngIf="clienteIdSelecionado"
+          [clienteId]="clienteIdSelecionado"
+          [listaEspecies]="especiesSignal()"
+          [listaPortes]="portesSignal()"
+          [listaSexos]="sexosSignal()"
+          [isLoading]="petFormIsLoading()"
+          [errorMessage]="petFormErrorMessage()"
+          [successMessage]="petFormSuccessMessage()"
+          (salvar)="onSalvarPet($event)"
+          (cancelar)="onCancelarCadastroPet()">
+        </app-animal-novo>
       </div>
     </ng-container>
     <ng-template #agendamentoForm>
@@ -114,14 +118,18 @@
           *ngIf="clienteIdSelecionado"
           [clienteId]="clienteIdSelecionado"
           [petsDoCliente]="petsDoClienteParaFormulario"
-          (agendamentoConcluido)="onAgendamentoConcluido()"
+          [servicos]="servicosSignal()"
+          [isLoading]="agendamentoFormIsLoading()"
+          [mensagemSucesso]="agendamentoFormSuccessMessage()"
+          [mensagemErro]="agendamentoFormErrorMessage()"
+          (confirmar)="onConfirmarAgendamento($event)"
           (formularioFechado)="onFormularioAgendamentoFechado()">
         </app-agendamento-novo>
       </div>
     </ng-template>
   </main>
 
-  <main class="main-content" *ngIf="abaAtiva === 'menu'">
+  <main class="main-content" *ngIf="abaAtiva() === 'menu'">
     <div class="menu-hero-container">
       <h1 class="hero-title">Sua referência em saúde e bem-estar animal.</h1>
       <p class="hero-subtitle">Gerenciamento digital para um cuidado completo e ágil.</p>

@@ -1,8 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { finalize } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
+import { StorageService } from '../services/storage.service';
+import { SessionService } from '../services/session.service';
 
 // Imports dos componentes filhos
 import { CadastroFuncionarioComponent } from '../cadastro-funcionario/cadastro-funcionario.component';
@@ -13,10 +17,10 @@ import { CadastroMedicamentoComponent } from '../cadastro-medicamento/cadastro-m
 import { ProntuarioService } from '../services/prontuario.service';
 import { InternacaoService } from '../services/internacao.service';
 import { AnimalResponse } from '../models/animal.model';
-import { ProntuarioRequest, ProntuarioResponse, RegistroProntuarioRequest } from '../models/prontuario.model';
-import { FuncionarioResponse } from '../models/funcionario.model';
-import { DiariaRequest, DiariaResponse, InternacaoRequest, InternacaoResponse, AdministracaoMedicamentoRequest } from '../models/internacao.model';
+import { ProntuarioRequest, ProntuarioResponse, RegistroProntuarioRequest, RegistroProntuarioResponse } from '../models/prontuario.model';
+import { DiariaRequest, DiariaResponse, InternacaoRequest, InternacaoResponse, AdministracaoMedicamentoRequest, AdministracaoMedicamentoResponse } from '../models/internacao.model';
 import { MedicamentoResponse } from '../models/medicamento.model';
+import { FuncionarioResponse } from '../models/funcionario.model';
 
 @Component({
   selector: 'app-menu-admin',
@@ -35,6 +39,8 @@ export class MenuAdminComponent implements OnInit {
   isLoading = false;
   isSaving = false;
   error: string | null = null;
+  isManager = signal<boolean>(false);
+  private sessionService = inject(SessionService);
 
   // Variáveis de dados
   animais: AnimalResponse[] = [];
@@ -62,10 +68,20 @@ export class MenuAdminComponent implements OnInit {
     private prontuarioService: ProntuarioService,
     private internacaoService: InternacaoService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private storageService: StorageService,
+    private router: Router
   ) {}
 
+  logout(): void {
+    this.storageService.removeItem('authToken');
+    this.router.navigate(['/api/login']);
+  }
+
   ngOnInit(): void {
+    const role = this.sessionService.getRole();
+    this.isManager.set(role === 'ROLE_ADMIN');
+
     this.carregarAnimais();
     this.carregarVeterinarios();
     this.carregarFuncionarios();
@@ -102,8 +118,10 @@ export class MenuAdminComponent implements OnInit {
     this.internacaoService.createAdministracaoMedicamento(this.novoMedicamentoRequest)
       .pipe(finalize(() => this.isSaving = false))
       .subscribe({
-        next: (internacaoAtualizada) => {
-          this.internacaoAtiva = internacaoAtualizada;
+        next: (response: AdministracaoMedicamentoResponse) => {
+          if (this.animalSelecionadoId) {
+            this.verificarInternacaoAtiva(this.animalSelecionadoId);
+          }
           this.exibindoFormularioAddMedicamento = false;
         },
         error: (err) => {
@@ -142,7 +160,12 @@ export class MenuAdminComponent implements OnInit {
     this.internacaoService.createDiaria(this.novaDiariaRequest)
       .pipe(finalize(() => this.isSaving = false))
       .subscribe({
-        next: (internacaoAtualizada) => { this.internacaoAtiva = internacaoAtualizada; this.exibindoFormularioNovaDiaria = false; },
+        next: (response: DiariaResponse) => {
+          if (this.animalSelecionadoId) {
+            this.verificarInternacaoAtiva(this.animalSelecionadoId);
+          }
+          this.exibindoFormularioNovaDiaria = false;
+        },
         error: (err) => { this.error = "Falha ao salvar a diária."; console.error(err); }
       });
   }
@@ -178,7 +201,7 @@ export class MenuAdminComponent implements OnInit {
 
     this.imagemAnimalUrl = null;
     if (this.animalSelecionadoId) {
-      const url = `http://localhost:8080/api/animais/imagem/${this.animalSelecionadoId}`;
+      const url = `${environment.apiUrl}/api/animais/imagem/${this.animalSelecionadoId}`;
       this.imagemAnimalUrl = this.sanitizer.bypassSecurityTrustUrl(url);
     }
     this.cdr.detectChanges();
@@ -252,7 +275,15 @@ export class MenuAdminComponent implements OnInit {
     this.prontuarioService.createRegistroProntuario(this.novoRegistroRequest)
       .pipe(finalize(() => this.isSaving = false))
       .subscribe({
-        next: (prontuarioAtualizado) => { this.exibindoFormularioNovoRegistro = false; this.prontuarioSelecionado = prontuarioAtualizado; },
+        next: (registroCriado: RegistroProntuarioResponse) => {
+          this.exibindoFormularioNovoRegistro = false;
+          if (this.animalSelecionadoId) {
+            this.prontuarioService.getProntuarioByAnimalId(this.animalSelecionadoId).subscribe({
+              next: (prontuario) => { this.prontuarioSelecionado = prontuario; },
+              error: (err) => { this.error = 'Falha ao recarregar o prontuário.'; }
+            });
+          }
+        },
         error: (err) => { this.error = 'Falha ao salvar o novo registro.'; console.error(err); }
       });
   }
@@ -260,7 +291,13 @@ export class MenuAdminComponent implements OnInit {
     const animal = this.animais.find(a => a.id === this.animalSelecionadoId);
     return animal ? animal.nome : 'Animal';
   }
-  selecionarAba(aba: 'prontuario' | 'cadastros'): void { this.abaAtiva = aba; this.telaCadastroAtiva = 'nenhuma'; }
+  selecionarAba(aba: 'prontuario' | 'cadastros'): void {
+    if (aba === 'cadastros' && !this.isManager()) {
+      return;
+    }
+    this.abaAtiva = aba;
+    this.telaCadastroAtiva = 'nenhuma';
+  }
   mostrarCadastroFuncionario(): void { this.telaCadastroAtiva = 'funcionario'; }
   mostrarCadastroServico(): void { this.telaCadastroAtiva = 'servico'; }
   mostrarCadastroMedicamento(): void { this.telaCadastroAtiva = 'medicamento'; }

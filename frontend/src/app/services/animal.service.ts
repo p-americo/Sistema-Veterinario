@@ -5,14 +5,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AnimalRequest, AnimalResponse, AnimalUpdate } from '../models/animal.model';
 import { ClienteResponse } from '../models/cliente.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnimalService {
-  private apiUrl = 'http://localhost:8080/api/animais';
-  private enumsUrl = 'http://localhost:8080/api/enums';
-  private clientesUrl = 'http://localhost:8080/api/clientes';
+  private apiUrl = `${environment.apiUrl}/api/animais`;
+  private enumsUrl = `${environment.apiUrl}/api/enums`;
+  private clientesUrl = `${environment.apiUrl}/api/clientes`;
 
   constructor(private http: HttpClient) { }
 

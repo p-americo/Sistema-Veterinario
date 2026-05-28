@@ -3,11 +3,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MedicamentoRequest, MedicamentoResponse } from '../models/medicamento.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class MedicamentoService {
-  private apiUrl = 'http://localhost:8080/api/medicamentos';
-  private enumsUrl = 'http://localhost:8080/api/enums';
+  private apiUrl = `${environment.apiUrl}/api/medicamentos`;
+  private enumsUrl = `${environment.apiUrl}/api/enums`;
 
   constructor(private http: HttpClient) { }
 
