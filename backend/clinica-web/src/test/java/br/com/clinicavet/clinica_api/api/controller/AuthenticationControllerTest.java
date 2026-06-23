@@ -1,5 +1,6 @@
 package br.com.clinicavet.clinica_api.api.controller;
 
+import br.com.clinicavet.clinica_api.testsupport.DataSeederFixtures;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,12 +23,12 @@ class AuthenticationControllerTest {
 
     @Test
     void login_ComCredenciaisValidas_DeveRetornarTokenJWT() throws Exception {
-        String jsonRequest = """
+        String jsonRequest = String.format("""
                 {
-                    "login": "12345678900",
-                    "senha": "Senha123!"
+                    "login": "%s",
+                    "senha": "%s"
                 }
-                """;
+                """, DataSeederFixtures.ADMIN_LOGIN, DataSeederFixtures.ADMIN_SENHA);
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -39,12 +40,12 @@ class AuthenticationControllerTest {
 
     @Test
     void login_ComCredenciaisInvalidas_DeveRetornar401Ou403() throws Exception {
-        String jsonRequest = """
+        String jsonRequest = String.format("""
                 {
-                    "login": "12345678900",
+                    "login": "%s",
                     "senha": "SenhaIncorreta"
                 }
-                """;
+                """, DataSeederFixtures.ADMIN_LOGIN);
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

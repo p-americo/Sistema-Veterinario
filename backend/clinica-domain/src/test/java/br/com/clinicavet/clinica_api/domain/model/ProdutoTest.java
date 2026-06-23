@@ -7,6 +7,25 @@ import static org.junit.jupiter.api.Assertions.*;
 class ProdutoTest {
 
     @Test
+    void inicializarEstoque_ComEstoqueNuloOuNegativo_DeveLancarExcecao() {
+        Produto produto = new Produto();
+        produto.setNome("Medicamento A");
+
+        assertThrows(BusinessRuleException.class, () -> produto.inicializarEstoque(null));
+        assertThrows(BusinessRuleException.class, () -> produto.inicializarEstoque(-1));
+    }
+
+    @Test
+    void inicializarEstoque_ComEstoqueValido_DeveDefinirQuantidade() {
+        Produto produto = new Produto();
+        produto.setNome("Medicamento A");
+
+        produto.inicializarEstoque(0);
+
+        assertEquals(0, produto.getQuantidadeEstoque());
+    }
+
+    @Test
     void debitarEstoque_QuantidadeValida_DeveDecrementar() {
         Produto produto = new Produto();
         produto.setNome("Medicamento A");

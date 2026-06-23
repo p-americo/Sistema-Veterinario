@@ -79,7 +79,10 @@ public class RegistroProntuarioServiceImplement extends GenericCrudServiceImplem
         RegistroProntuario registroExistente = registroProntuarioRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Registro do prontuário não encontrado com o ID: " + id));
 
-        modelMapper.map(registroRequestDTO, registroExistente);
+        registroExistente.setDataHora(registroRequestDTO.getDataHora());
+        registroExistente.setPesoNoDia(registroRequestDTO.getPesoNoDia());
+        registroExistente.setObservacoesClinicas(registroRequestDTO.getObservacoesClinicas());
+        registroExistente.setDiagnostico(registroRequestDTO.getDiagnostico());
 
         if (registroRequestDTO.getVeterinarioResponsavelId() != null) {
             Funcionario veterinario = funcionarioRepository.findById(registroRequestDTO.getVeterinarioResponsavelId())
