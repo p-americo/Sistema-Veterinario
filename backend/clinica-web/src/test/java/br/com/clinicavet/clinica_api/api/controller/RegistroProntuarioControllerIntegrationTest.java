@@ -6,6 +6,7 @@ import br.com.clinicavet.clinica_api.domain.model.enums.EnumPorte;
 import br.com.clinicavet.clinica_api.domain.model.enums.EnumSexo;
 import br.com.clinicavet.clinica_api.domain.repository.*;
 import br.com.clinicavet.clinica_api.infrastructure.security.TokenService;
+import br.com.clinicavet.clinica_api.testsupport.DataSeederFixtures;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,12 +64,12 @@ class RegistroProntuarioControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        Usuario adminUser = usuarioRepository.findByLogin("12345678900")
+        Usuario adminUser = usuarioRepository.findByLogin(DataSeederFixtures.ADMIN_LOGIN)
                 .orElseThrow(() -> new IllegalStateException("Admin do DataSeeder não encontrado"));
         adminToken = tokenService.gerarToken(adminUser);
         seededVeterinario = (Funcionario) adminUser.getPessoa();
 
-        Usuario clienteUser = usuarioRepository.findByLogin("11111111111")
+        Usuario clienteUser = usuarioRepository.findByLogin(DataSeederFixtures.CLIENTE_LOGIN)
                 .orElseThrow(() -> new IllegalStateException("Cliente do DataSeeder não encontrado"));
         seededCliente = (Cliente) clienteUser.getPessoa();
 

@@ -3,6 +3,7 @@ package br.com.clinicavet.clinica_api.api.controller;
 import br.com.clinicavet.clinica_api.domain.model.Usuario;
 import br.com.clinicavet.clinica_api.domain.repository.UsuarioRepository;
 import br.com.clinicavet.clinica_api.infrastructure.security.TokenService;
+import br.com.clinicavet.clinica_api.testsupport.DataSeederFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ class EnumControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        Usuario adminUser = usuarioRepository.findByLogin("12345678900")
+        Usuario adminUser = usuarioRepository.findByLogin(DataSeederFixtures.ADMIN_LOGIN)
                 .orElseThrow(() -> new IllegalStateException("Admin do DataSeeder não encontrado"));
         adminToken = tokenService.gerarToken(adminUser);
     }

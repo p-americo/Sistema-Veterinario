@@ -130,6 +130,17 @@ class AdministracaoMedicamentoTest {
     }
 
     @Test
+    void associarAoProntuario_ChamadoDuasVezes_NaoDeveDuplicarNaLista() {
+        RegistroProntuario prontuario = new RegistroProntuario();
+        AdministracaoMedicamento administracao = new AdministracaoMedicamento();
+
+        administracao.associarAoProntuario(prontuario);
+        administracao.associarAoProntuario(prontuario);
+
+        assertEquals(1, prontuario.getMedicamentosAdministrados().size());
+    }
+
+    @Test
     void associarDiaria_ComDadosValidos_DeveAssociarBidirecionalmente() {
         DiariaInternacao diaria = new DiariaInternacao();
         AdministracaoMedicamento administracao = new AdministracaoMedicamento();
@@ -147,5 +158,16 @@ class AdministracaoMedicamentoTest {
         assertThrows(IllegalArgumentException.class, () -> {
             administracao.associarDiaria(null);
         });
+    }
+
+    @Test
+    void associarDiaria_ChamadoDuasVezes_NaoDeveDuplicarNaLista() {
+        DiariaInternacao diaria = new DiariaInternacao();
+        AdministracaoMedicamento administracao = new AdministracaoMedicamento();
+
+        administracao.associarDiaria(diaria);
+        administracao.associarDiaria(diaria);
+
+        assertEquals(1, diaria.getMedicamentos().size());
     }
 }

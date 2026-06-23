@@ -3,6 +3,7 @@ package br.com.clinicavet.clinica_api.api.controller;
 import br.com.clinicavet.clinica_api.domain.model.Usuario;
 import br.com.clinicavet.clinica_api.domain.repository.UsuarioRepository;
 import br.com.clinicavet.clinica_api.infrastructure.security.TokenService;
+import br.com.clinicavet.clinica_api.testsupport.DataSeederFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ class UsuarioControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        adminUser = usuarioRepository.findByLogin("12345678900")
+        adminUser = usuarioRepository.findByLogin(DataSeederFixtures.ADMIN_LOGIN)
                 .orElseThrow(() -> new IllegalStateException("Admin do DataSeeder não encontrado"));
         adminToken = tokenService.gerarToken(adminUser);
     }
@@ -61,19 +62,19 @@ class UsuarioControllerIntegrationTest {
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(org.hamcrest.Matchers.greaterThanOrEqualTo(2)))
-                .andExpect(jsonPath("$.content[?(@.login == '12345678900')]").exists())
-                .andExpect(jsonPath("$.content[?(@.login == '11111111111')]").exists());
+                .andExpect(jsonPath("$.content[?(@.login == '" + DataSeederFixtures.ADMIN_LOGIN + "')]").exists())
+                .andExpect(jsonPath("$.content[?(@.login == '" + DataSeederFixtures.CLIENTE_LOGIN + "')]").exists());
     }
 
     @Test
     void atualizarSenha_SemToken_DeveRetornar401Unauthorized() throws Exception {
-        String jsonRequest = """
+        String jsonRequest = String.format("""
                 {
-                    "senhaAtual": "Senha123!",
+                    "senhaAtual": "%s",
                     "novaSenha": "NovaSenha456!",
                     "confirmarNovaSenha": "NovaSenha456!"
                 }
-                """;
+                """, DataSeederFixtures.ADMIN_SENHA);
 
         mockMvc.perform(put("/api/usuarios/{id}/atualizar-senha", adminUser.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -83,13 +84,13 @@ class UsuarioControllerIntegrationTest {
 
     @Test
     void atualizarSenha_ComDadosValidos_DeveRetornar200EAlterarSenha() throws Exception {
-        String jsonRequest = """
+        String jsonRequest = String.format("""
                 {
-                    "senhaAtual": "Senha123!",
+                    "senhaAtual": "%s",
                     "novaSenha": "NovaSenha456!",
                     "confirmarNovaSenha": "NovaSenha456!"
                 }
-                """;
+                """, DataSeederFixtures.ADMIN_SENHA);
 
         mockMvc.perform(put("/api/usuarios/{id}/atualizar-senha", adminUser.getId())
                         .header("Authorization", "Bearer " + adminToken)
@@ -122,13 +123,13 @@ class UsuarioControllerIntegrationTest {
 
     @Test
     void atualizarSenha_ComNovaSenhaEConfirmacaoDiferentes_DeveRetornar400BadRequest() throws Exception {
-        String jsonRequest = """
+        String jsonRequest = String.format("""
                 {
-                    "senhaAtual": "Senha123!",
+                    "senhaAtual": "%s",
                     "novaSenha": "NovaSenha456!",
                     "confirmarNovaSenha": "OutraSenha789!"
                 }
-                """;
+                """, DataSeederFixtures.ADMIN_SENHA);
 
         mockMvc.perform(put("/api/usuarios/{id}/atualizar-senha", adminUser.getId())
                         .header("Authorization", "Bearer " + adminToken)
@@ -140,13 +141,13 @@ class UsuarioControllerIntegrationTest {
 
     @Test
     void atualizarSenha_ComUsuarioInexistente_DeveRetornar400BadRequest() throws Exception {
-        String jsonRequest = """
+        String jsonRequest = String.format("""
                 {
-                    "senhaAtual": "Senha123!",
+                    "senhaAtual": "%s",
                     "novaSenha": "NovaSenha456!",
                     "confirmarNovaSenha": "NovaSenha456!"
                 }
-                """;
+                """, DataSeederFixtures.ADMIN_SENHA);
 
         mockMvc.perform(put("/api/usuarios/{id}/atualizar-senha", 999999)
                         .header("Authorization", "Bearer " + adminToken)
