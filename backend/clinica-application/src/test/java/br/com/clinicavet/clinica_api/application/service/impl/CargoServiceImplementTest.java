@@ -101,6 +101,19 @@ public class CargoServiceImplementTest {
     }
 
     @Test
+    void atualizar_SucessoMesmoCargoEncontradoPorTipo() {
+        when(cargoRepository.findById(1L)).thenReturn(Optional.of(cargo));
+        when(cargoRepository.findByCargo(requestDTO.getCargo())).thenReturn(Optional.of(cargo));
+        when(cargoRepository.save(cargo)).thenReturn(cargo);
+        when(modelMapper.map(cargo, CargoResponseDTO.class)).thenReturn(responseDTO);
+
+        CargoResponseDTO resultado = cargoService.atualizar(1L, requestDTO);
+
+        assertNotNull(resultado);
+        verify(cargoRepository, times(1)).save(cargo);
+    }
+
+    @Test
     void atualizar_ExceptionCargoJaEmUso() {
         Cargo outroCargo = new Cargo();
         outroCargo.setId(2L);
