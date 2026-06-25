@@ -1,7 +1,8 @@
-name: CI
+name: CD
 
 on:
-  pull_request:
+  push:
+    branches: [main]
 
 jobs:
   backend:
@@ -88,3 +89,12 @@ jobs:
           ' */target/site/jacoco/jacoco.csv || { echo "  FALHA: cobertura global está abaixo do limiar mínimo de 50%."; status=1; }
 
           exit $status
+
+  deploy:
+    name: Deploy to Render
+    needs: backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: |
+          curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
