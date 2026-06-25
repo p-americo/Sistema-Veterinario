@@ -27,10 +27,14 @@ WORKDIR /app
 
 # Criação de um usuário não-root por segurança
 RUN addgroup -S spring && adduser -S spring -G spring
+
+# Cria a pasta de logs e ajusta as permissões de /app antes de mudar de usuário
+RUN mkdir -p /app/logs && chown -R spring:spring /app
+
 USER spring:spring
 
-# Copia o jar gerado no estágio anterior
-COPY --from=builder /app/clinica-web/target/clinica-web-0.0.1-SNAPSHOT.jar app.jar
+# Copia o jar gerado no estágio anterior definindo o proprietário correto
+COPY --chown=spring:spring --from=builder /app/clinica-web/target/clinica-web-0.0.1-SNAPSHOT.jar app.jar
 
 # Porta padrão exposta
 EXPOSE 8080
