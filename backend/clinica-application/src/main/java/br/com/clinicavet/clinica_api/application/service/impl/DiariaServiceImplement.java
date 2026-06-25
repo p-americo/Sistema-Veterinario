@@ -33,15 +33,17 @@ public class DiariaServiceImplement implements DiariaService {
 
         DiariaInternacao diaria = DiariaMapper.toEntity(dto);
         internacao.adicionarDiaria(diaria);
+        // saveAndFlush força o INSERT imediatamente (IDENTITY), garantindo que o id
+        // esteja disponível na cópia gerenciada antes de filtrar a coleção.
+        Internacao salva = internacaoRepository.saveAndFlush(internacao);
 
-        Internacao savedInternacao = internacaoRepository.save(internacao);
-        
-        DiariaInternacao diariaSalva = savedInternacao.getDiarias().stream()
-                .filter(d -> d.getDataHora().equals(diaria.getDataHora()))
+        return salva.getDiarias().stream()
+                .filter(d -> dto.getDataHora().equals(d.getDataHora())
+                        && dto.getDiagnostico().equals(d.getDiagnostico())
+                        && dto.getObservacoesClinicas().equals(d.getObservacoesClinicas()))
                 .findFirst()
-                .orElse(diaria);
-
-        return DiariaMapper.toResponseDTO(diariaSalva);
+                .map(DiariaMapper::toResponseDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Erro ao recuperar a diária criada."));
     }
 
     @Override
