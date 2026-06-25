@@ -69,14 +69,14 @@ public class DiariaServiceImplementTest {
     @Test
     void criar_Sucesso() {
         when(internacaoRepository.findById(1L)).thenReturn(Optional.of(internacao));
-        when(internacaoRepository.save(internacao)).thenReturn(internacao);
+        when(internacaoRepository.saveAndFlush(internacao)).thenReturn(internacao);
 
         DiariaResponseDTO resultado = diariaService.criar(requestDTO);
 
         assertNotNull(resultado);
         assertEquals("Em recuperação", resultado.getDiagnostico());
         assertEquals("Melhorou o apetite", resultado.getObservacoesClinicas());
-        verify(internacaoRepository, times(1)).save(internacao);
+        verify(internacaoRepository, times(1)).saveAndFlush(internacao);
     }
 
     @Test

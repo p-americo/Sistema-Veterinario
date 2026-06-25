@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InternacaoRepository extends GenericRepository<Internacao, Long> {
-    
+
+    Internacao saveAndFlush(Internacao entity);
+
     List<Internacao> findByAnimalIdAndStatus(Long animalId, EnumInternacaoStatus status);
     
     List<Internacao> findAllCompletas();
