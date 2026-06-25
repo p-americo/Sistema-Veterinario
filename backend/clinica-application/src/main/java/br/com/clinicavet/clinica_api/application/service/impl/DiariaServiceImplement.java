@@ -34,8 +34,14 @@ public class DiariaServiceImplement implements DiariaService {
         DiariaInternacao diaria = DiariaMapper.toEntity(dto);
         internacao.adicionarDiaria(diaria);
 
-        internacaoRepository.save(internacao);
-        return DiariaMapper.toResponseDTO(diaria);
+        Internacao savedInternacao = internacaoRepository.save(internacao);
+        
+        DiariaInternacao diariaSalva = savedInternacao.getDiarias().stream()
+                .filter(d -> d.getDataHora().equals(diaria.getDataHora()))
+                .findFirst()
+                .orElse(diaria);
+
+        return DiariaMapper.toResponseDTO(diariaSalva);
     }
 
     @Override

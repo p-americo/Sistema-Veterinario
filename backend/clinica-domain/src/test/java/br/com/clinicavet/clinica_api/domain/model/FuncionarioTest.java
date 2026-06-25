@@ -8,6 +8,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class FuncionarioTest {
 
     @Test
+    void alterarCargo_ComCargoNulo_DeveLancarExcecao() {
+        Funcionario funcionario = new Funcionario();
+
+        assertThrows(BusinessRuleException.class, () -> funcionario.alterarCargo(null, "CRMV-SP 12345"));
+    }
+
+    @Test
     void alterarCargo_ParaVeterinarioComCrmvValido_DeveFuncionar() {
         Funcionario funcionario = new Funcionario();
         Cargo cargoVet = new Cargo();
@@ -55,5 +62,17 @@ class FuncionarioTest {
         assertThrows(BusinessRuleException.class, () -> {
             funcionario.alterarCargo(cargoRec, "CRMV-SP 12345");
         });
+    }
+
+    @Test
+    void alterarCargo_ParaNaoVeterinarioComCrmvEmBranco_DeveFuncionar() {
+        Funcionario funcionario = new Funcionario();
+        Cargo cargoRec = new Cargo();
+        cargoRec.setCargo(EnumCargo.RECEPCIONISTA);
+
+        funcionario.alterarCargo(cargoRec, "   ");
+
+        assertEquals(cargoRec, funcionario.getCargo());
+        assertNull(funcionario.getCrmv());
     }
 }

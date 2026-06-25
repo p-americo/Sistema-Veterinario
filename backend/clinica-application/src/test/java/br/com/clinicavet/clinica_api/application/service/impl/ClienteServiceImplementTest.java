@@ -199,6 +199,51 @@ public class ClienteServiceImplementTest {
     }
 
     @Test
+    void atualizarCliente_SucessoSemAlterarCpfEEmail() {
+        updateDTO.setCpf(null);
+        updateDTO.setEmail(null);
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(clienteRepository.save(cliente)).thenReturn(cliente);
+        when(modelMapper.map(cliente, ClienteResponseDTO.class)).thenReturn(responseDTO);
+
+        ClienteResponseDTO resultado = clienteService.atualizarCliente(1L, updateDTO);
+
+        assertNotNull(resultado);
+        verify(pessoaRepository, never()).existsByCpf(any());
+        verify(pessoaRepository, never()).existsByEmail(any());
+    }
+
+    @Test
+    void atualizarCliente_SucessoComEmailIgualAoExistente() {
+        updateDTO.setEmail(cliente.getEmail());
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(clienteRepository.save(cliente)).thenReturn(cliente);
+        when(modelMapper.map(cliente, ClienteResponseDTO.class)).thenReturn(responseDTO);
+
+        ClienteResponseDTO resultado = clienteService.atualizarCliente(1L, updateDTO);
+
+        assertNotNull(resultado);
+        verify(pessoaRepository, never()).existsByEmail(any());
+        verify(clienteRepository, times(1)).save(cliente);
+    }
+
+    @Test
+    void atualizarCliente_SucessoComCpfEEmailDiferentesSemConflito() {
+        updateDTO.setCpf("11122233344");
+        updateDTO.setEmail("novo@email.com");
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(pessoaRepository.existsByCpf("11122233344")).thenReturn(false);
+        when(pessoaRepository.existsByEmail("novo@email.com")).thenReturn(false);
+        when(clienteRepository.save(cliente)).thenReturn(cliente);
+        when(modelMapper.map(cliente, ClienteResponseDTO.class)).thenReturn(responseDTO);
+
+        ClienteResponseDTO resultado = clienteService.atualizarCliente(1L, updateDTO);
+
+        assertNotNull(resultado);
+        verify(clienteRepository, times(1)).save(cliente);
+    }
+
+    @Test
     void atualizarCliente_ExceptionNaoEncontrado() {
         when(clienteRepository.findById(1L)).thenReturn(Optional.empty());
 

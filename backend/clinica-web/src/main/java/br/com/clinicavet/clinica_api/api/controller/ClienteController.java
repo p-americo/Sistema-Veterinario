@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import jakarta.validation.Valid;
 
 @Tag(name = "Clientes", description = "Gerenciamento de clientes da clínica")
 @RestController
@@ -47,7 +48,7 @@ public class ClienteController {
             @ApiResponse(responseCode = "409", description = "Conflito de dados (CPF ou E-mail já cadastrado).",
                     content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    public ResponseEntity<ClienteResponseDTO> criarCliente(@RequestBody ClienteRequestDTO clienteRequestDTO, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<ClienteResponseDTO> criarCliente(@RequestBody @Valid ClienteRequestDTO clienteRequestDTO, UriComponentsBuilder uriBuilder) {
         ClienteResponseDTO responseDTO = clienteService.criar(clienteRequestDTO);
         URI uri = uriBuilder.path("/api/clientes/{id}").buildAndExpand(responseDTO.getId()).toUri();
         return ResponseEntity.created(uri).body(responseDTO);
@@ -105,7 +106,7 @@ public class ClienteController {
                     content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteResponseDTO> atualizarCliente(@PathVariable Long id, @RequestBody ClienteUpdateDTO UpdateRequestDTO) {
+    public ResponseEntity<ClienteResponseDTO> atualizarCliente(@PathVariable Long id, @RequestBody @Valid ClienteUpdateDTO UpdateRequestDTO) {
         ClienteResponseDTO responseDTO = clienteService.atualizarCliente(id, UpdateRequestDTO);
         return ResponseEntity.ok(responseDTO);
     }
