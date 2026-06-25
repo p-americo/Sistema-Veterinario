@@ -60,18 +60,33 @@ jobs:
             done
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
-      - name: Coverage gate (mínimo global de 50%)
+      - name: Coverage gate (mínimo de 50% por módulo e global)
         working-directory: backend
         run: |
+          status=0
+
+          echo "Verificando cobertura mínima de 50% por módulo:"
+          for csv in */target/site/jacoco/jacoco.csv; do
+            [ -f "$csv" ] || continue
+            module=$(echo "$csv" | cut -d/ -f1)
+            awk -F',' -v mod="$module" 'NR>1 {mi+=$4; ci+=$5} END {
+              total = mi+ci;
+              pct = total ? 100*ci/total : 0;
+              printf "  %s: %.2f%%\n", mod, pct;
+              if (pct < 50) exit 1;
+            }' "$csv" || { echo "  FALHA: módulo $module está abaixo do limiar mínimo de 50%."; status=1; }
+          done
+
+          echo ""
+          echo "Verificando cobertura global mínima de 50%:"
           awk -F',' '
             FNR>1 { mi+=$4; ci+=$5 }
             END {
               total = mi+ci;
               pct = total ? 100*ci/total : 0;
-              printf "Cobertura global de instruções: %.2f%% (limiar mínimo: 50%%)\n", pct;
-              if (pct < 50) {
-                print "FALHA: cobertura global abaixo do limiar mínimo de 50%.";
-                exit 1;
-              }
+              printf "  Global: %.2f%%\n", pct;
+              if (pct < 50) exit 1;
             }
-          ' */target/site/jacoco/jacoco.csv
+          ' */target/site/jacoco/jacoco.csv || { echo "  FALHA: cobertura global está abaixo do limiar mínimo de 50%."; status=1; }
+
+          exit $status
