@@ -79,6 +79,20 @@ public class MedicamentoServiceImplement extends GenericCrudServiceImplement<Med
         return mapEntidadeParaResponse(medicamentoAtualizado);
     }
 
+    @Override
+    public MedicamentoResponseDTO buscarPorId(Long id) {
+        Medicamento medicamento = repository.findById(id)
+                .orElseThrow(() -> new br.com.clinicavet.clinica_api.domain.exception.ResourceNotFoundException("Medicamento não encontrado com o ID: " + id));
+        return mapEntidadeParaResponse(medicamento);
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<MedicamentoResponseDTO> listarTodos(org.springframework.data.domain.Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(this::mapEntidadeParaResponse);
+    }
+
+
     private MedicamentoResponseDTO mapEntidadeParaResponse(Medicamento medicamento) {
         MedicamentoResponseDTO dto = modelMapper.map(medicamento, MedicamentoResponseDTO.class);
         if (medicamento.getProduto() != null) {
