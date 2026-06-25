@@ -45,14 +45,33 @@ jobs:
         if: always()
         working-directory: backend
         run: |
-          echo "### Cobertura JaCoCo por módulo" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Módulo | Instruções | Branches |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
-          for csv in */target/site/jacoco/jacoco.csv; do
-            module=$(echo "$csv" | cut -d/ -f1)
-            awk -F',' -v mod="$module" 'NR>1 {mi+=$4; ci+=$5; mb+=$6; cb+=$7} END {
-              instr = (mi+ci) ? 100*ci/(mi+ci) : 100;
-              branch = (mb+cb) ? 100*cb/(mb+cb) : 100;
-              printf "| %s | %.1f%% | %.1f%% |\n", mod, instr, branch;
-            }' "$csv" >> "$GITHUB_STEP_SUMMARY"
-          done
+          {
+            echo "### Cobertura JaCoCo por módulo"
+            echo "| Módulo | Instruções | Branches |"
+            echo "|---|---|---|"
+            for csv in */target/site/jacoco/jacoco.csv; do
+              [ -f "$csv" ] || continue
+              module=$(echo "$csv" | cut -d/ -f1)
+              awk -F',' -v mod="$module" 'NR>1 {mi+=$4; ci+=$5; mb+=$6; cb+=$7} END {
+                instr = (mi+ci) ? 100*ci/(mi+ci) : 100;
+                branch = (mb+cb) ? 100*cb/(mb+cb) : 100;
+                printf "| %s | %.1f%% | %.1f%% |\n", mod, instr, branch;
+              }' "$csv"
+            done
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Coverage gate (mínimo global de 50%)
+        working-directory: backend
+        run: |
+          awk -F',' '
+            FNR>1 { mi+=$4; ci+=$5 }
+            END {
+              total = mi+ci;
+              pct = total ? 100*ci/total : 0;
+              printf "Cobertura global de instruções: %.2f%% (limiar mínimo: 50%%)\n", pct;
+              if (pct < 50) {
+                print "FALHA: cobertura global abaixo do limiar mínimo de 50%.";
+                exit 1;
+              }
+            }
+          ' */target/site/jacoco/jacoco.csv
